@@ -14,11 +14,20 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch exact production headers and body
+      - name: Compare production endpoints
         run: |
-          echo '---HEADERS---'
-          curl -LsS -D - -o /tmp/page.html --max-time 20 'https://ram-upgrade.vercel.app/?inspect=headers'
-          echo '---BODY META---'
-          echo "BYTES=$(wc -c < /tmp/page.html | tr -d ' ')"
-          grep -Eo 'https://[^" ]+' /tmp/page.html || true
-          echo '---END---'
+          for URL in \
+            'https://ram-upgrade.vercel.app/?inspect=compare' \
+            'https://ram-upgrade-mike-yang.vercel.app/?inspect=compare' \
+            'https://ram-upgrade-341nnf2fo-mike-yang.vercel.app/?inspect=compare' \
+            'https://ram-upgrade-l5yafs4ku-mike-yang.vercel.app/?inspect=compare'
+          do
+            echo "=== $URL ==="
+            code=$(curl -LsS -w '%{http_code}' -o /tmp/page.html --max-time 20 "$URL" || true)
+            bytes=$(wc -c < /tmp/page.html 2>/dev/null | tr -d ' ' || echo 0)
+            echo "HTTP=$code BYTES=$bytes"
+            if grep -q 'V9 — Royal Air Maroc editorial booking tool' /tmp/page.html 2>/dev/null; then echo 'V9=YES'; else echo 'V9=NO'; fi
+            if grep -q '正在加载 Safar Flyer' /tmp/page.html 2>/dev/null; then echo 'LOADER=YES'; else echo 'LOADER=NO'; fi
+            head -c 120 /tmp/page.html 2>/dev/null || true
+            echo
+          done
