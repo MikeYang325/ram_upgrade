@@ -20,38 +20,32 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import shutil, hashlib
+          import shutil, hashlib, json
 
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-
-          # 123.html already embeds the RAM logo as base64. This CSS line
-          # overrides it with a missing local PNG on Vercel, so remove only it.
+          s = Path('index.html').read_text(encoding='utf-8')
           s = s.replace('.logo img{content:url("royal-air-maroc-logo.png")}\n', '')
           s = s.replace('.logo img{content:url("royal-air-maroc-logo.png")}', '')
 
           if 'src="data:image/png;base64,' not in s:
-              raise SystemExit('embedded RAM logo not found; refusing to commit')
+              raise SystemExit('embedded RAM logo not found')
           if 'royal-air-maroc-logo.png' in s:
-              raise SystemExit('external logo override still exists; refusing to commit')
+              raise SystemExit('external logo override still exists')
 
           raw = s.encode('utf-8')
           Path('index.html').write_bytes(raw)
           Path('123.html').write_bytes(raw)
 
-          # Vercel serves this HTML directly. No loader, gzip payload or runtime reconstruction.
-          Path('vercel.json').write_text('''{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "mkdir -p dist && cp index.html dist/index.html",
-  "outputDirectory": "dist",
-  "cleanUrls": true
-}
-''', encoding='utf-8')
+          cfg = {
+              '$schema': 'https://openapi.vercel.sh/vercel.json',
+              'buildCommand': 'mkdir -p dist && cp index.html dist/index.html',
+              'outputDirectory': 'dist',
+              'cleanUrls': True,
+          }
+          Path('vercel.json').write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
           Path('build.js').unlink(missing_ok=True)
           shutil.rmtree('_payload', ignore_errors=True)
           shutil.rmtree('_direct123', ignore_errors=True)
-
           print('DIRECT_HTML_OK', len(raw), hashlib.sha256(raw).hexdigest())
           PY
       - name: Commit fixed direct page
