@@ -1,0 +1,113 @@
+name: Final exact 123 restore
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-exact-restore.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore exact uploaded 123.html from verified historical payload
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const zlib = require('zlib');
+          const crypto = require('crypto');
+          const cp = require('child_process');
+
+          const sourceCommit = '66c5b5c0f74b623a77d57f91daeef5ebce6585bd';
+          const expectedSize = 104651;
+          const expectedSha256 = 'f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8';
+
+          const encoded = [0,1,2,3].map(i =>
+            cp.execFileSync('git', ['show', `${sourceCommit}:_exact123/p${i}.b64`], {encoding:'utf8'})
+          ).join('').replace(/\s+/g, '');
+
+          const raw = zlib.brotliDecompressSync(Buffer.from(encoded, 'base64'));
+          const sha256 = crypto.createHash('sha256').update(raw).digest('hex');
+
+          if (raw.length !== expectedSize) {
+            throw new Error(`size mismatch: ${raw.length} != ${expectedSize}`);
+          }
+          if (sha256 !== expectedSha256) {
+            throw new Error(`sha256 mismatch: ${sha256} != ${expectedSha256}`);
+          }
+
+          fs.writeFileSync('123.html', raw);
+          fs.writeFileSync('index.html', raw);
+
+          fs.writeFileSync('vercel.json', JSON.stringify({
+            '$schema': 'https://openapi.vercel.sh/vercel.json',
+            buildCommand: 'mkdir -p dist && cp index.html dist/index.html',
+            outputDirectory: 'dist',
+            cleanUrls: true
+          }, null, 2) + '\n');
+
+          for (const p of [
+            'build.js',
+            '.github/workflows/final-exact-restore.yml',
+            '.github/workflows/fix-logo-direct.yml',
+            '.github/workflows/restore-exact-123.yml',
+            '.github/workflows/materialize-index.yml',
+            '.github/workflows/inspect-production.yml',
+            '.github/workflows/verify-production.yml'
+          ]) fs.rmSync(p, {force:true});
+
+          for (const p of ['_payload', '_direct123', '_exact123']) {
+            fs.rmSync(p, {recursive:true, force:true});
+          }
+
+          console.log(`EXACT_123_LOCAL_OK bytes=${raw.length} sha256=${sha256}`);
+          NODE
+
+      - name: Commit exact original HTML
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'restore: exact original 123.html byte-for-byte'
+          git push
+
+      - name: Verify repository blob content
+        shell: bash
+        run: |
+          EXPECTED='f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8'
+          git pull --ff-only
+          test "$(wc -c < index.html | tr -d ' ')" = '104651'
+          test "$(sha256sum index.html | awk '{print $1}')" = "$EXPECTED"
+          test "$(sha256sum 123.html | awk '{print $1}')" = "$EXPECTED"
+          echo 'REPOSITORY_EXACT_123_OK'
+
+      - name: Verify production exact bytes
+        shell: bash
+        run: |
+          EXPECTED='f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8'
+          for i in $(seq 1 60); do
+            URL="https://ram-upgrade.vercel.app/?exact123=$(date +%s)-$i"
+            echo "Attempt $i"
+            if curl -LfsS --max-time 20 "$URL" -o /tmp/prod.html; then
+              BYTES=$(wc -c < /tmp/prod.html | tr -d ' ')
+              HASH=$(sha256sum /tmp/prod.html | awk '{print $1}')
+              echo "bytes=$BYTES sha256=$HASH"
+              if [ "$BYTES" = '104651' ] && [ "$HASH" = "$EXPECTED" ]; then
+                echo 'PRODUCTION_EXACT_123_OK'
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo 'Production did not switch to exact uploaded 123.html in time.'
+          exit 1
