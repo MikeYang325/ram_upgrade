@@ -34,7 +34,7 @@ jobs:
               end = s.index(end_marker, start) + len(end_marker)
               while end < len(s) and s[end] == '\n':
                   end += 1
-              s = s[:start] + s[end:]
+              s = s[:start] + '\n' + s[end:]
 
           s = s.replace('<p data-t="subtitle">Royal Air Maroc · miles planner</p>', '<p data-t="subtitle">Royal Air Maroc · CMN hub · miles planner</p>')
           s = s.replace('subtitle:"摩洛哥皇家航空 · 官方累计基数"', 'subtitle:"摩洛哥皇家航空 · CMN 枢纽 · 官方累计基数"')
