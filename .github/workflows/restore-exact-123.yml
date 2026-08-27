@@ -1,0 +1,60 @@
+name: Restore exact uploaded 123
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/restore-exact-123.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore exact uploaded 123.html
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, shutil
+
+          expected = 'f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8'
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          prefix = '\n\n\n/* Minimal requested changes:'
+          end_marker = '.metric .sub:not(#targetRequirement){display:none !important;}'
+          if prefix in s:
+              start = s.index(prefix)
+              end = s.index(end_marker, start) + len(end_marker)
+              s = s[:start] + s[end:]
+
+          raw = s.encode('utf-8')
+          digest = hashlib.sha256(raw).hexdigest()
+          if digest != expected:
+              raise SystemExit(f'SHA256 mismatch: got {digest}, expected {expected}')
+
+          Path('123.html').write_bytes(raw)
+          Path('index.html').write_bytes(raw)
+
+          Path('vercel.json').write_text('''{\n  "$schema": "https://openapi.vercel.sh/vercel.json",\n  "buildCommand": "mkdir -p dist && cp 123.html dist/index.html",\n  "outputDirectory": "dist",\n  "cleanUrls": true\n}\n''', encoding='utf-8')
+
+          for f in ['build.js', '.github/workflows/materialize-index.yml', '.github/workflows/inspect-production.yml']:
+              Path(f).unlink(missing_ok=True)
+          for d in ['_payload', '_direct123']:
+              shutil.rmtree(d, ignore_errors=True)
+
+          print(f'EXACT_123_OK bytes={len(raw)} sha256={digest}')
+          PY
+      - name: Commit exact original file
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'restore: upload exact original 123.html directly'
+          git push
