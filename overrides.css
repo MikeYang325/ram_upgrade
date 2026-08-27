@@ -6,8 +6,17 @@
 .field-title > small,
 .metric-grid article > small,
 .leg > span,
-.leg > small{
+.leg > small,
+.segmented button > small{
   display:none !important;
+}
+
+/* Only requested interaction change: keep the top navigation visible while scrolling. */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:70;
+  background:#fff;
 }
 
 /* Restore the original Royal Air Maroc Boeing 787-9 visual in the result hero. */
