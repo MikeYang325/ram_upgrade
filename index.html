@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Safar Flyer Status Optimizer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">RAM</div>
+      <div class="brand-copy">
+        <h1>Safar Flyer <span>status optimizer</span></h1>
+        <p data-i18n="subtitle">摩洛哥皇家航空 · CMN 枢纽 · Status Miles 规划</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="data-chip"><b id="airportCount">0</b> AIRPORTS</span>
+      <button class="text-button" id="langBtn" type="button">EN</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="config-panel" id="configPanel">
+      <div class="section-title"><span data-i18n="searchTitle">搜索条件</span><small>CONFIG</small></div>
+
+      <section class="form-section route-section">
+        <div class="field-title"><span data-i18n="route">行程</span><small>VIA CMN</small></div>
+        <div class="route-pickers">
+          <button class="airport-picker" id="originBtn" data-picker="origin" type="button"></button>
+          <button class="swap-button" id="swapBtn" type="button" aria-label="swap">⇄</button>
+          <button class="airport-picker" id="destinationBtn" data-picker="destination" type="button"></button>
+        </div>
+        <label class="toggle-row">
+          <input id="roundTrip" type="checkbox" checked>
+          <span class="toggle-ui"></span>
+          <span><b data-i18n="roundTrip">往返</b><small data-i18n="roundTripDesc">计算去程 + 回程</small></span>
+        </label>
+      </section>
+
+      <section class="form-section">
+        <div class="field-title"><span data-i18n="cabin">舱位类型</span><small>CABIN</small></div>
+        <div class="segmented three" id="cabinChoices">
+          <button class="active" data-value="economy" type="button"><b data-i18n="economy">经济舱</b><small>50 / 100 / 150%</small></button>
+          <button data-value="business" type="button"><b data-i18n="business">商务舱</b><small>150 / 200%</small></button>
+          <button data-value="mixed" type="button"><b data-i18n="mixed">混舱</b><small data-i18n="mixedDesc">经济 + 商务</small></button>
+        </div>
+        <div class="fare-grid">
+          <label><span data-i18n="outbound">去程</span><select id="outCabinType" class="control compact-cabin"><option value="economy">经济舱</option><option value="business">商务舱</option></select><select id="outFare" class="control"></select></label>
+          <label id="returnField"><span data-i18n="return">回程</span><select id="retCabinType" class="control compact-cabin"><option value="economy">经济舱</option><option value="business">商务舱</option></select><select id="retFare" class="control"></select></label>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <div class="field-title"><span data-i18n="target">目标会籍</span><small>STATUS</small></div>
+        <div class="segmented three status-segment" id="targetChoices">
+          <button data-value="gold" type="button"><b>GOLD</b><small>35K · RAM 17.5K</small></button>
+          <button class="active" data-value="platinum" type="button"><b>PLATINUM</b><small data-i18n="upgrade">升级 · 75K</small></button>
+          <button data-value="platinum_retain" type="button"><b>PLATINUM</b><small data-i18n="retain">保级 · 70K</small></button>
+        </div>
+        <details class="tier-map">
+          <summary data-i18n="tierMap">会籍对应关系</summary>
+          <div class="tier-row"><span>Silver</span><i>↔</i><b>oneworld Ruby</b></div>
+          <div class="tier-row"><span>Gold</span><i>↔</i><b>oneworld Sapphire</b></div>
+          <div class="tier-row"><span>Platinum</span><i>↔</i><b>oneworld Emerald</b></div>
+        </details>
+      </section>
+
+      <section class="form-section two-columns">
+        <div>
+          <div class="field-title"><span>Status Booster</span><small>BOOST</small></div>
+          <div class="segmented three compact" id="boosterChoices">
+            <button data-value="1" type="button">1X</button><button data-value="2" type="button">2X</button><button class="active" data-value="3" type="button">3X</button>
+          </div>
+        </div>
+        <div>
+          <div class="field-title"><span data-i18n="current">当前进度</span><small>MILES</small></div>
+          <div class="current-grid">
+            <label><span>Total</span><input class="control" id="currentStatus" type="number" value="0" min="0"></label>
+            <label><span>RAM</span><input class="control" id="currentRam" type="number" value="0" min="0"></label>
+          </div>
+        </div>
+      </section>
+
+      <div class="assumption" id="note"></div>
+    </aside>
+
+    <main class="result-panel" id="resultPanel">
+      <section class="route-hero">
+        <div>
+          <small data-i18n="selectedRoute">当前方案</small>
+          <div class="route-line"><b id="heroOrigin">PKX</b><span>→</span><em>CMN</em><span>→</span><b id="heroDestination">GRU</b></div>
+          <p id="heroMeta"></p>
+        </div>
+        <div class="hero-target"><small data-i18n="target">目标会籍</small><b id="heroTarget">PLATINUM</b></div>
+      </section>
+
+      <section class="metric-grid">
+        <article><span data-i18n="base">单程基础</span><b id="baseMiles">-</b><small>RAM BASE</small></article>
+        <article><span data-i18n="outMiles">去程</span><b id="outStatus">-</b><small id="outSub"></small></article>
+        <article><span data-i18n="retMiles">回程</span><b id="retStatus">-</b><small id="retSub"></small></article>
+        <article class="accent"><span data-i18n="tripTotal">本次行程</span><b id="tripTotal">-</b><small>STATUS MILES</small></article>
+        <article><span data-i18n="yearTotal">年度累计</span><b id="finalTotal">-</b><small>TOTAL</small></article>
+        <article><span>RAM</span><b id="finalRam">-</b><small>STATUS MILES</small></article>
+      </section>
+
+      <section class="progress-card">
+        <div class="progress-item"><div><span data-i18n="totalProgress">总 Status Miles</span><b id="totalProgressValue"></b></div><div class="track"><i id="totalFill"></i></div></div>
+        <div class="progress-item"><div><span>RAM Status Miles</span><b id="ramProgressValue"></b></div><div class="track"><i id="ramFill"></i></div></div>
+        <div class="status-message" id="statusMessage"></div>
+      </section>
+
+      <section class="legs-grid" id="legsGrid"></section>
+
+      <section class="ranking-section" id="rankingPanel">
+        <div class="ranking-head">
+          <div><h2 data-i18n="ranking">目的地排名</h2><p data-i18n="rankingDesc">点击任意路线即可设为当前目的地</p></div>
+          <span id="rankingCount"></span>
+        </div>
+        <div class="ranking-tools">
+          <input class="control" id="tableSearch" data-i18n-placeholder="searchPlaceholder" placeholder="搜索国家 / 城市 / 机场 / 三字码">
+          <select class="control" id="sortMode"><option value="required" data-i18n="sortRequired">最接近达标</option><option value="status" data-i18n="sortStatus">Status Miles 最高</option><option value="base" data-i18n="sortBase">基础里程最高</option></select>
+          <label class="pass-toggle"><input id="passOnly" type="checkbox" checked><span data-i18n="passOnly">仅达标</span></label>
+        </div>
+        <div class="empty-banner" id="rankingHint" hidden></div>
+        <div class="ranking-table-wrap">
+          <table>
+            <thead><tr><th>#</th><th data-i18n="destination">目的地</th><th data-i18n="tripMiles">本次里程</th><th data-i18n="need">最低所需</th><th data-i18n="surplus">余量 / 缺口</th><th data-i18n="yearTotal">年度累计</th><th data-i18n="status">状态</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<nav class="mobile-dock" id="mobileDock" aria-label="quick navigation">
+  <button data-scroll="configPanel" type="button" data-i18n="dockSearch">条件</button>
+  <button data-scroll="resultPanel" type="button" data-i18n="dockResult">结果</button>
+  <button data-scroll="rankingPanel" type="button" data-i18n="dockRanking">排名</button>
+</nav>
+
+<div class="modal" id="airportModal" aria-hidden="true">
+  <div class="picker-sheet" role="dialog" aria-modal="true">
+    <div class="picker-head"><div><small data-i18n="airportPicker">机场选择</small><h3 id="pickerTitle"></h3></div><button id="closePicker" type="button">×</button></div>
+    <input class="control picker-search" id="airportSearch" data-i18n-placeholder="airportSearch" placeholder="搜索 IATA / 国家 / 城市 / 机场">
+    <div class="chips" id="quickChips"></div>
+    <div class="picker-results" id="pickerResults"></div>
+  </div>
+</div>
+
+<script>window.RAM_META={generatedAt:"2026-08-27T06:44:23.864Z",hub:"CMN"};</script>
+<script src="data-1.js"></script>
+<script src="data-2.js"></script>
+<script src="data-3.js"></script>
+<script src="data-4.js"></script>
+<script src="data-5.js"></script>
+<script src="data-6.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
