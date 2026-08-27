@@ -10,6 +10,23 @@
   display:none !important;
 }
 
+/* Restore the original Royal Air Maroc Boeing 787-9 visual in the result hero. */
+.route-hero{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,
+      #fff 0%,
+      #fff 48%,
+      rgba(255,255,255,.96) 57%,
+      rgba(255,255,255,.72) 68%,
+      rgba(255,255,255,.18) 100%
+    ),
+    url("https://commons.wikimedia.org/wiki/Special:Redirect/file/Royal%20Air%20Maroc%20Boeing%20787-9%20CN-RHA%20MD1.jpg?width=1600") right center / 58% auto no-repeat;
+}
+.route-hero > *{position:relative;z-index:1}
+
 /* Increase overall readability without changing the compact layout structure. */
 body{font-size:15px;line-height:1.5}
 .brand h1{font-size:19px}
@@ -54,6 +71,14 @@ th{font-size:10px}
 .airport-item span{font-size:11px}
 .airport-item small,.airport-item em{font-size:9px}
 
+@media(max-width:1100px){
+  .route-hero{
+    background:
+      linear-gradient(90deg,#fff 0%,rgba(255,255,255,.94) 55%,rgba(255,255,255,.35) 100%),
+      url("https://commons.wikimedia.org/wiki/Special:Redirect/file/Royal%20Air%20Maroc%20Boeing%20787-9%20CN-RHA%20MD1.jpg?width=1600") 72% center / cover no-repeat;
+  }
+}
+
 @media(max-width:720px){
   body{font-size:14px}
   .brand h1{font-size:16px}
@@ -64,6 +89,11 @@ th{font-size:10px}
   .airport-picker span{font-size:9px}
   .segmented b{font-size:12px}
   .control{font-size:13px}
+  .route-hero{
+    background:
+      linear-gradient(90deg,#fff 0%,rgba(255,255,255,.96) 58%,rgba(255,255,255,.46) 100%),
+      url("https://commons.wikimedia.org/wiki/Special:Redirect/file/Royal%20Air%20Maroc%20Boeing%20787-9%20CN-RHA%20MD1.jpg?width=1200") 68% center / cover no-repeat;
+  }
   .route-line b{font-size:24px}
   .metric-grid span{font-size:10px}
   .metric-grid b{font-size:18px}
