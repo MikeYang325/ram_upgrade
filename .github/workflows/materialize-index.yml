@@ -1,0 +1,33 @@
+name: Materialize static index
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '_payload/**'
+      - 'build.js'
+      - '.github/workflows/materialize-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build real static HTML
+        run: node build.js
+      - name: Replace loader with generated HTML
+        run: |
+          cp dist/index.html index.html
+          if git diff --quiet -- index.html; then
+            echo 'index.html already materialized'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'build: materialize static index [generated]'
+          git push
