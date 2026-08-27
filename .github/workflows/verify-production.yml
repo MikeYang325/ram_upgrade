@@ -1,0 +1,42 @@
+name: Verify production site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '.github/workflows/verify-production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Vercel and verify real static page
+        shell: bash
+        run: |
+          set -u
+          URL="https://ram-upgrade.vercel.app/?verify=${GITHUB_SHA}"
+          for i in $(seq 1 18); do
+            echo "Attempt $i: $URL"
+            if curl -LfsS --max-time 15 "$URL" -o /tmp/page.html; then
+              bytes=$(wc -c < /tmp/page.html | tr -d ' ')
+              echo "Fetched $bytes bytes"
+              if grep -q 'V9 — Royal Air Maroc editorial booking tool' /tmp/page.html \
+                 && grep -q 'position:sticky !important' /tmp/page.html \
+                 && ! grep -q '页面加载失败' /tmp/page.html \
+                 && ! grep -q '正在加载 Safar Flyer' /tmp/page.html; then
+                echo "PRODUCTION_OK bytes=$bytes"
+                exit 0
+              fi
+              echo 'Production has not switched to the materialized page yet.'
+              head -c 240 /tmp/page.html || true
+              echo
+            fi
+            sleep 10
+          done
+          echo 'Production verification failed after retries.'
+          exit 1
