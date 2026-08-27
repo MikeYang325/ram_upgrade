@@ -1,0 +1,24 @@
+name: Inspect production body
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/inspect-production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch exact production body
+        run: |
+          curl -LfsS --max-time 20 'https://ram-upgrade.vercel.app/?inspect=1' -o /tmp/page.html
+          echo "BYTES=$(wc -c < /tmp/page.html | tr -d ' ')"
+          echo '---BODY---'
+          cat /tmp/page.html
+          echo
+          echo '---END---'
