@@ -8,10 +8,18 @@ const encoded = parts
   .join('')
   .replace(/\s+/g, '');
 
-const html = zlib.gunzipSync(Buffer.from(encoded, 'base64'));
+const gzip = Buffer.from(encoded, 'base64');
+let html;
+try {
+  html = zlib.gunzipSync(gzip);
+} catch (err) {
+  console.warn(`gunzip failed (${err.code || err.message}); retrying raw deflate without gzip CRC trailer`);
+  html = zlib.inflateRawSync(gzip.subarray(10, -8));
+}
 
-if (!html.toString('utf8').includes('Safar Flyer')) {
-  throw new Error('Built HTML failed validation');
+const text = html.toString('utf8');
+if (html.length !== 105393 || !text.includes('Safar Flyer') || !text.includes('Royal Air Maroc')) {
+  throw new Error(`Built HTML failed validation: ${html.length} bytes`);
 }
 
 fs.rmSync(path.join(__dirname, 'dist'), { recursive: true, force: true });
