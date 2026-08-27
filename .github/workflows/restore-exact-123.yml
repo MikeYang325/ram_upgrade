@@ -33,6 +33,9 @@ jobs:
               end = s.index(end_marker, start) + len(end_marker)
               s = s[:start] + s[end:]
 
+          s = s.replace('subtitle:"摩洛哥皇家航空 · 官方累计基数"', 'subtitle:"摩洛哥皇家航空 · CMN 枢纽 · 官方累计基数"')
+          s = s.replace('subtitle:"ROYAL AIR MAROC · OFFICIAL MILES BASE"', 'subtitle:"ROYAL AIR MAROC · CMN HUB · OFFICIAL MILES BASE"')
+
           raw = s.encode('utf-8')
           digest = hashlib.sha256(raw).hexdigest()
           if digest != expected:
