@@ -14,11 +14,11 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch exact production body
+      - name: Fetch exact production headers and body
         run: |
-          curl -LfsS --max-time 20 'https://ram-upgrade.vercel.app/?inspect=1' -o /tmp/page.html
+          echo '---HEADERS---'
+          curl -LsS -D - -o /tmp/page.html --max-time 20 'https://ram-upgrade.vercel.app/?inspect=headers'
+          echo '---BODY META---'
           echo "BYTES=$(wc -c < /tmp/page.html | tr -d ' ')"
-          echo '---BODY---'
-          cat /tmp/page.html
-          echo
+          grep -Eo 'https://[^" ]+' /tmp/page.html || true
           echo '---END---'
