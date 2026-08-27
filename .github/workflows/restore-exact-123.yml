@@ -15,47 +15,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Restore exact uploaded 123.html
+
+      - name: Reconstruct exact uploaded 123.html
         shell: bash
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import hashlib, shutil
+          node <<'NODE'
+          const fs = require('fs');
+          const zlib = require('zlib');
+          const crypto = require('crypto');
 
-          expected = 'f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8'
-          s = Path('index.html').read_text(encoding='utf-8')
+          const expected = 'f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8';
+          const encoded = [0,1,2,3]
+            .map(i => fs.readFileSync(`_exact123/p${i}.b64`, 'utf8'))
+            .join('')
+            .replace(/\s+/g, '');
+          const raw = zlib.brotliDecompressSync(Buffer.from(encoded, 'base64'));
+          const digest = crypto.createHash('sha256').update(raw).digest('hex');
 
-          start_marker = '/* Minimal requested changes:'
-          end_marker = '.status-top{display:none !important;}'
-          if start_marker in s:
-              start = s.index(start_marker)
-              while start > 0 and s[start-1] == '\n':
-                  start -= 1
-              end = s.index(end_marker, start) + len(end_marker)
-              while end < len(s) and s[end] == '\n':
-                  end += 1
-              s = s[:start] + '\n' + s[end:]
+          if (raw.length !== 104651) throw new Error(`size mismatch: ${raw.length}`);
+          if (digest !== expected) throw new Error(`sha256 mismatch: ${digest}`);
 
-          s = s.replace('<p data-t="subtitle">Royal Air Maroc · miles planner</p>', '<p data-t="subtitle">Royal Air Maroc · CMN hub · miles planner</p>')
-          s = s.replace('subtitle:"摩洛哥皇家航空 · 官方累计基数"', 'subtitle:"摩洛哥皇家航空 · CMN 枢纽 · 官方累计基数"')
-          s = s.replace('subtitle:"ROYAL AIR MAROC · OFFICIAL MILES BASE"', 'subtitle:"ROYAL AIR MAROC · CMN HUB · OFFICIAL MILES BASE"')
+          fs.writeFileSync('123.html', raw);
+          fs.writeFileSync('index.html', raw);
+          fs.writeFileSync('vercel.json', JSON.stringify({
+            '$schema': 'https://openapi.vercel.sh/vercel.json',
+            buildCommand: 'mkdir -p dist && cp 123.html dist/index.html',
+            outputDirectory: 'dist',
+            cleanUrls: true
+          }, null, 2) + '\n');
 
-          raw = s.encode('utf-8')
-          digest = hashlib.sha256(raw).hexdigest()
-          if digest != expected:
-              raise SystemExit(f'SHA256 mismatch: got {digest}, expected {expected}')
+          const removeFiles = [
+            'build.js',
+            '.github/workflows/materialize-index.yml',
+            '.github/workflows/inspect-production.yml',
+            '.github/workflows/verify-production.yml',
+            '.github/workflows/restore-exact-123.yml'
+          ];
+          for (const p of removeFiles) fs.rmSync(p, { force: true });
+          for (const p of ['_payload', '_direct123', '_exact123']) {
+            fs.rmSync(p, { recursive: true, force: true });
+          }
 
-          Path('123.html').write_bytes(raw)
-          Path('index.html').write_bytes(raw)
-          Path('vercel.json').write_text('''{\n  "$schema": "https://openapi.vercel.sh/vercel.json",\n  "buildCommand": "mkdir -p dist && cp 123.html dist/index.html",\n  "outputDirectory": "dist",\n  "cleanUrls": true\n}\n''', encoding='utf-8')
+          console.log(`EXACT_123_OK bytes=${raw.length} sha256=${digest}`);
+          NODE
 
-          for f in ['build.js', '.github/workflows/materialize-index.yml', '.github/workflows/inspect-production.yml']:
-              Path(f).unlink(missing_ok=True)
-          for d in ['_payload', '_direct123']:
-              shutil.rmtree(d, ignore_errors=True)
-
-          print(f'EXACT_123_OK bytes={len(raw)} sha256={digest}')
-          PY
       - name: Commit exact original file
         shell: bash
         run: |
@@ -64,3 +67,24 @@ jobs:
           git add -A
           git commit -m 'restore: upload exact original 123.html directly'
           git push
+
+      - name: Verify exact production bytes
+        shell: bash
+        run: |
+          EXPECTED='f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8'
+          for i in $(seq 1 40); do
+            URL="https://ram-upgrade.vercel.app/?exact123=$(date +%s)-$i"
+            echo "Attempt $i: $URL"
+            if curl -LfsS --max-time 20 "$URL" -o /tmp/prod.html; then
+              BYTES=$(wc -c < /tmp/prod.html | tr -d ' ')
+              HASH=$(sha256sum /tmp/prod.html | awk '{print $1}')
+              echo "bytes=$BYTES sha256=$HASH"
+              if [ "$BYTES" = '104651' ] && [ "$HASH" = "$EXPECTED" ]; then
+                echo "PRODUCTION_EXACT_123_OK"
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo 'Production did not switch to exact 123.html in time.'
+          exit 1
