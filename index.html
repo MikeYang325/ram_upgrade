@@ -13,38 +13,26 @@ html,body{margin:0;min-height:100%;background:#fff;font-family:Arial,"PingFang S
 <div id="boot">正在加载 Safar Flyer…</div>
 <script>
 (async()=>{
-  const base='https://cdn.jsdelivr.net/gh/ydx123mike/ram_upgrade@cf69f0943868ac11e3ad5cb3f37b4fbc5c794a3c/_payload/';
+  const base='https://raw.githubusercontent.com/ydx123mike/ram_upgrade/cf69f0943868ac11e3ad5cb3f37b4fbc5c794a3c/_payload/';
   try{
+    if(!('DecompressionStream' in window)) throw new Error('当前浏览器不支持 gzip 解压');
     const [a,b]=await Promise.all([
-      fetch(base+'page1.b64').then(r=>{if(!r.ok)throw new Error('payload 1: '+r.status);return r.text()}),
-      fetch(base+'page2.b64').then(r=>{if(!r.ok)throw new Error('payload 2: '+r.status);return r.text()})
+      fetch(base+'page1.b64?1',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('payload 1: '+r.status);return r.text()}),
+      fetch(base+'page2.b64?1',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('payload 2: '+r.status);return r.text()})
     ]);
     const encoded=(a+b).replace(/\s+/g,'');
     const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
-    let html='';
-    if('DecompressionStream' in window){
-      try{
-        const ds=new DecompressionStream('gzip');
-        html=await new Response(new Blob([bytes]).stream().pipeThrough(ds)).text();
-      }catch(_e){}
-    }
-    if(!html){
-      await new Promise((resolve,reject)=>{
-        const s=document.createElement('script');
-        s.src='https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js';
-        s.onload=resolve;
-        s.onerror=()=>reject(new Error('gzip fallback 加载失败'));
-        document.head.appendChild(s);
-      });
-      html=new TextDecoder().decode(window.pako.ungzip(bytes));
-    }
-    if(!html.includes('Safar Flyer')) throw new Error('页面数据校验失败');
+    if(bytes[0]!==31||bytes[1]!==139) throw new Error('页面数据损坏');
+    const ds=new DecompressionStream('gzip');
+    const html=await new Response(new Blob([bytes]).stream().pipeThrough(ds)).text();
+    if(!html.startsWith('<!doctype html>')||!html.includes('Safar Flyer')) throw new Error('页面数据校验失败');
     document.open();
     document.write(html);
     document.close();
   }catch(e){
+    const msg=e&&e.message?e.message:String(e);
     const el=document.getElementById('boot');
-    if(el) el.textContent='页面加载失败，请刷新重试：'+e.message;
+    if(el) el.textContent='页面加载失败：'+msg;
     console.error(e);
   }
 })();
