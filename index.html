@@ -4,9 +4,571 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Safar Flyer Status Optimizer</title>
-<link rel="stylesheet" href="/ui-overrides.css">
+<link rel="stylesheet" href="v10.css">
 </head>
 <body>
-<script>location.replace('/123.html')</script>
+<div class="shell">
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-label="Royal Air Maroc"><img alt="Royal Air Maroc" src="data:image/png;base64,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"></div>
+    <div>
+      <h1>Safar Flyer <span>status optimizer</span></h1>
+      <p data-t="subtitle">Royal Air Maroc · CMN hub · miles planner</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <div class="sys-pill">AIRPORTS <b id="airportCount">105</b></div>
+    <div class="sys-pill">DATA <b>LOCAL</b></div>
+    <button class="ghost-btn" id="langBtn">EN</button>
+  </div>
+</header>
+
+<div class="layout">
+<aside class="panel">
+  <div class="panel-head"><strong data-t="config">01 // 搜索条件</strong></div>
+  <div class="form">
+
+    <div class="section-label"><span data-t="routeSection">出发地</span></div>
+    <button class="airport-btn" id="originBtn" data-picker="origin"></button>
+
+    <label class="trip-toggle" for="roundTrip">
+      <input type="checkbox" id="roundTrip" checked>
+      <span class="checkmark"></span>
+      <span>
+        <b data-t="roundTrip">往返</b>
+        <small data-t="roundTripDesc">勾选：去程 + 回程；取消：仅计算单程</small>
+      </span>
+    </label>
+
+    <div class="section-label"><span data-t="cabinSection">舱位类型</span></div>
+    <div class="choice-grid three" id="cabinChoices">
+      <label class="choice active" data-value="economy"><input type="radio" name="cabin"><div class="title" data-t="economy">经济舱</div><div class="desc">50% / 100% / 150%</div></label>
+      <label class="choice" data-value="business"><input type="radio" name="cabin"><div class="title" data-t="business">商务舱</div><div class="desc">150% / 200%</div></label>
+      <label class="choice" data-value="mixed"><input type="radio" name="cabin"><div class="title" data-t="mixed">混舱</div><div class="desc" data-t="mixedDesc">经济 + 商务</div></label>
+    </div>
+
+    <div class="section-label"><span data-t="fareSection">去程 / 回程累计</span></div>
+    <div class="fields2">
+      <div class="field">
+        <label data-t="outbound">去程</label>
+        <div class="mix-row" id="outMix">
+          <select class="control cabin-type" id="outCabinType">
+            <option value="economy" data-t="economy">经济舱</option>
+            <option value="business" data-t="business">商务舱</option>
+          </select>
+          <select class="control" id="outFare"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label data-t="return">回程</label>
+        <div class="mix-row" id="retMix">
+          <select class="control cabin-type" id="retCabinType">
+            <option value="economy" data-t="economy">经济舱</option>
+            <option value="business" data-t="business">商务舱</option>
+          </select>
+          <select class="control" id="retFare"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label"><span data-t="targetSection">目标会籍</span></div>
+    <div class="choice-grid three" id="targetChoices">
+      <label class="choice" data-value="gold"><input type="radio" name="target"><div class="title">GOLD</div><div class="desc">35,000 · RAM 17,500</div></label>
+      <label class="choice active" data-value="platinum"><input type="radio" name="target"><div class="title">PLATINUM 升级</div><div class="desc">75,000 · RAM 37,500</div></label>
+      <label class="choice" data-value="platinum_retain"><input type="radio" name="target"><div class="title">PLATINUM 保级</div><div class="desc">70,000 · RAM 37,500</div></label>
+    </div>
+
+    <div class="status-map airline-ffp" aria-label="Safar Flyer and oneworld tier mapping">
+      <div class="airline-ffp__header"><span>Safar Flyer Tier</span><span><b>one</b>world Tier</span></div>
+      <div class="airline-ffp__row"><span>Safar Flyer Platinum</span><span class="airline-tier airline-tier--emerald"><i></i>Emerald</span></div>
+      <div class="airline-ffp__row"><span>Safar Flyer Ambassador</span><span class="airline-tier airline-tier--sapphire"><i></i>Sapphire</span></div>
+      <div class="airline-ffp__row"><span>Safar Flyer Gold</span><span class="airline-tier airline-tier--sapphire"><i></i>Sapphire</span></div>
+      <div class="airline-ffp__row"><span>Safar Flyer Silver</span><span class="airline-tier airline-tier--ruby"><i></i>Ruby</span></div>
+    </div>
+
+    <details class="advanced-controls">
+      <summary data-t="advancedControls">高级计算</summary>
+      <div class="advanced-content">
+    <div class="section-label"><span data-t="boosterSection">Status Booster</span></div>
+    <div class="choice-grid three" id="boosterChoices">
+      <label class="choice" data-value="1"><input type="radio" name="booster"><div class="title" data-t="none">无</div><div class="desc">1X</div></label>
+      <label class="choice" data-value="2"><input type="radio" name="booster"><div class="title">2X</div><div class="desc">STATUS MILES</div></label>
+      <label class="choice active" data-value="3"><input type="radio" name="booster"><div class="title">3X</div><div class="desc">STATUS MILES</div></label>
+    </div>
+
+    <div class="section-label"><span data-t="currentSection">当前进度</span></div>
+    <div class="fields2">
+      <div class="field">
+        <label data-t="currentStatus">当前 Status Miles</label>
+        <input class="control" id="currentStatus" type="number" value="0" min="0">
+      </div>
+      <div class="field">
+        <label data-t="currentRam">其中 RAM Status Miles</label>
+        <input class="control" id="currentRam" type="number" value="0" min="0">
+      </div>
+    </div>
+
+    <div class="note" id="note"></div>
+      </div>
+    </details>
+  </div>
+</aside>
+
+<main class="panel">
+  <div class="panel-head"><strong data-t="result">02 // 方案结果</strong><span id="dataStamp"></span></div>
+
+  <section class="hero">
+    <div class="route">
+      <div class="route-end route-origin"><div class="route-code" id="heroOrigin">PKX</div><div class="route-meta" id="heroOriginMeta"></div></div>
+      <div class="route-connector" aria-label="CMN transit"><span></span><span class="hub-chip">CMN</span><span></span></div>
+      <div class="route-end route-destination"><div class="route-code" id="heroDestination">GRU</div><div class="route-meta" id="heroDestinationMeta"></div></div>
+    </div>
+  </section>
+
+  <section class="summary-grid">
+    <div class="metric"><div class="label" data-t="baseOneWay">单程基础</div><div class="value yellow" id="baseMiles">-</div><div class="sub">RAM OFFICIAL BASE</div></div>
+    <div class="metric"><div class="label" data-t="outStatus">去程 Status Miles</div><div class="value" id="outStatus">-</div><div class="sub" id="outSub"></div></div>
+    <div class="metric"><div class="label" data-t="retStatus">回程 Status Miles</div><div class="value" id="retStatus">-</div><div class="sub" id="retSub"></div></div>
+    <div class="metric"><div class="label" data-t="tripTotal">本次行程</div><div class="value cyan" id="tripTotal">-</div><div class="sub">STATUS MILES</div></div>
+    <div class="metric"><div class="label" data-t="finalTotal">年度累计</div><div class="value" id="finalTotal">-</div><div class="sub">TOTAL STATUS MILES</div></div>
+    <div class="metric"><div class="label" data-t="targetMetric">目标</div><div class="value green" id="targetName">PLATINUM</div><div class="sub" id="targetRequirement"></div></div>
+  </section>
+
+  <section class="progress-box">
+    <div class="progress-row">
+      <div class="progress-name" data-t="totalProgress">总 Status Miles</div>
+      <div class="track"><div class="fill" id="totalFill"></div></div>
+      <div class="progress-value" id="totalProgressValue"></div>
+    </div>
+    <div class="progress-row">
+      <div class="progress-name" data-t="ramProgress">RAM Status Miles</div>
+      <div class="track"><div class="fill" id="ramFill"></div></div>
+      <div class="progress-value" id="ramProgressValue"></div>
+    </div>
+    <div class="status-box">
+      <div>
+        <div class="status-title" id="statusTitle"></div>
+        <div class="route-meta" id="statusDetail"></div>
+      </div>
+      <div class="status-title" id="statusBadge"></div>
+    </div>
+  </section>
+
+  <section class="legs">
+    <div class="leg"><div class="leg-code" id="leg1Code"></div><div class="leg-meta" id="leg1Meta"></div><div class="leg-value" id="leg1Miles"></div></div>
+    <div class="leg"><div class="leg-code" id="leg2Code"></div><div class="leg-meta" id="leg2Meta"></div><div class="leg-value" id="leg2Miles"></div></div>
+    <div class="leg"><div class="leg-code" id="leg3Code"></div><div class="leg-meta" id="leg3Meta"></div><div class="leg-value" id="leg3Miles"></div></div>
+    <div class="leg"><div class="leg-code" id="leg4Code"></div><div class="leg-meta" id="leg4Meta"></div><div class="leg-value" id="leg4Miles"></div></div>
+  </section>
+
+  <div class="panel-head"><strong data-t="ranking">03 // 目的地排名</strong><span data-t="rankingHint">按当前舱位与 Booster 实时计算</span></div>
+  <div class="table-tools">
+    <input class="control" id="tableSearch" data-ph="tableSearch" placeholder="搜索国家 / 城市 / 机场 / 三字码">
+    <select class="control" id="sortMode">
+      <option value="required" data-t="sortRequired">按达标所需里程（由少到多）</option>
+      <option value="status" data-t="sortStatus">按 Status Miles（由高到低）</option>
+      <option value="base" data-t="sortBase">按基础里程（由高到低）</option>
+    </select>
+    <div class="control" style="display:flex;align-items:center;color:var(--green);font-size:10px;" data-t="passOnlyFixed">✓ 仅显示达标路线</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th><th data-t="destinationCol">目的地</th><th data-t="continentCountry">大洲 / 国家</th>
+        <th data-t="baseCol">单程基础</th><th data-t="tripCol">本次 Status Miles</th>
+        <th data-t="neededCol">达标最低所需</th><th data-t="surplusCol">达标余量</th>
+        <th data-t="yearCol">年度累计</th><th data-t="statusCol">状态</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</main>
+</div>
+
+</div>
+
+<div class="modal" id="airportModal">
+  <div class="picker">
+    <div class="picker-head">
+      <div class="picker-top">
+        <div class="picker-title" id="pickerTitle"></div>
+        <button class="close" id="closePicker">×</button>
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search" id="airportSearch" autocomplete="off" data-ph="airportSearch" placeholder="搜索 IATA / 国家 / 城市 / 机场名">
+      </div>
+      <div class="quick-label" data-t="quickSearch">快捷筛选</div>
+      <div class="chips" id="quickChips"></div>
+    </div>
+    <div class="picker-results" id="pickerResults"></div>
+  </div>
+</div>
+
+<script>
+const DATA = {"generatedAt": "2026-08-27T06:44:23.864Z", "hub": "CMN", "airports": {"ERH": {"miles": 210, "awardMiles": 210}, "AHU": {"miles": 249, "awardMiles": 249}, "AGA": {"miles": 237, "awardMiles": 237}, "VIL": {"miles": 837, "awardMiles": 837}, "FEZ": {"miles": 156, "awardMiles": 156}, "GLN": {"miles": 335, "awardMiles": 335}, "RAK": {"miles": 124, "awardMiles": 124}, "EUN": {"miles": 543, "awardMiles": 543}, "NDR": {"miles": 283, "awardMiles": 283}, "OZZ": {"miles": 173, "awardMiles": 173}, "RBA": {"miles": 67, "awardMiles": 67}, "OUD": {"miles": 339, "awardMiles": 339}, "SMW": {"miles": 500, "awardMiles": 500}, "TTA": {"miles": 397, "awardMiles": 397}, "TNG": {"miles": 189, "awardMiles": 189}, "TTU": {"miles": 201, "awardMiles": 201}, "OZG": {"miles": 245, "awardMiles": 245}, "AMS": {"miles": 1447, "awardMiles": 1447}, "ALC": {"miles": 519, "awardMiles": 519}, "BCN": {"miles": 763, "awardMiles": 763}, "BIO": {"miles": 731, "awardMiles": 731}, "BLQ": {"miles": 1270, "awardMiles": 1270}, "BOD": {"miles": 873, "awardMiles": 873}, "CTA": {"miles": 1304, "awardMiles": 1304}, "BRU": {"miles": 1357, "awardMiles": 1357}, "FRA": {"miles": 1415, "awardMiles": 1415}, "GVA": {"miles": 1145, "awardMiles": 1145}, "IST": {"miles": 2069, "awardMiles": 2069}, "LPA": {"miles": 597, "awardMiles": 597}, "LIL": {"miles": 1307, "awardMiles": 1307}, "LIS": {"miles": 384, "awardMiles": 384}, "LHR": {"miles": 1313, "awardMiles": 1313}, "LYS": {"miles": 1086, "awardMiles": 1086}, "MAD": {"miles": 539, "awardMiles": 539}, "AGP": {"miles": 288, "awardMiles": 288}, "MAN": {"miles": 1406, "awardMiles": 1406}, "MRS": {"miles": 980, "awardMiles": 980}, "MXP": {"miles": 1228, "awardMiles": 1228}, "MPL": {"miles": 941, "awardMiles": 941}, "DME": {"miles": 2640, "awardMiles": 2640}, "MUC": {"miles": 1441, "awardMiles": 1441}, "NTE": {"miles": 1003, "awardMiles": 1003}, "NAP": {"miles": 1308, "awardMiles": 1308}, "NCE": {"miles": 1068, "awardMiles": 1068}, "CDG": {"miles": 1202, "awardMiles": 1202}, "LED": {"miles": 2118, "awardMiles": 2118}, "OPO": {"miles": 547, "awardMiles": 547}, "FCO": {"miles": 1237, "awardMiles": 1237}, "SVQ": {"miles": 297, "awardMiles": 297}, "TFS": {"miles": 634, "awardMiles": 634}, "SXB": {"miles": 1310, "awardMiles": 1310}, "TLS": {"miles": 857, "awardMiles": 857}, "TRN": {"miles": 1151, "awardMiles": 1151}, "VLC": {"miles": 579, "awardMiles": 579}, "VRN": {"miles": 1289, "awardMiles": 1289}, "VCE": {"miles": 1348, "awardMiles": 1348}, "ZRH": {"miles": 1287, "awardMiles": 1287}, "ABJ": {"miles": 1958, "awardMiles": 1958}, "ABV": {"miles": 1916, "awardMiles": 1916}, "ACC": {"miles": 1978, "awardMiles": 1978}, "ALG": {"miles": 653, "awardMiles": 653}, "BKO": {"miles": 1434, "awardMiles": 1434}, "BGF": {"miles": 2926, "awardMiles": 2926}, "BJL": {"miles": 1497, "awardMiles": 1497}, "OXB": {"miles": 1570, "awardMiles": 1570}, "BZV": {"miles": 2998, "awardMiles": 2998}, "CKY": {"miles": 1689, "awardMiles": 1689}, "COO": {"miles": 1974, "awardMiles": 1974}, "DSS": {"miles": 1426, "awardMiles": 1426}, "DLA": {"miles": 2315, "awardMiles": 2315}, "FIH": {"miles": 3013, "awardMiles": 3013}, "FNA": {"miles": 1748, "awardMiles": 1748}, "LOS": {"miles": 1979, "awardMiles": 1979}, "CAI": {"miles": 2289, "awardMiles": 2289}, "LBV": {"miles": 2529, "awardMiles": 2529}, "LFW": {"miles": 1964, "awardMiles": 1964}, "LAD": {"miles": 0, "awardMiles": 0}, "ROB": {"miles": 1883, "awardMiles": 1883}, "SSG": {"miles": 2301, "awardMiles": 2301}, "NIM": {"miles": 1506, "awardMiles": 1506}, "NDJ": {"miles": 2047, "awardMiles": 2047}, "NKC": {"miles": 1176, "awardMiles": 1176}, "RAI": {"miles": 1617, "awardMiles": 1617}, "PNR": {"miles": 2930, "awardMiles": 2930}, "SID": {"miles": 1495, "awardMiles": 1495}, "MJI": {"miles": 0, "awardMiles": 0}, "OUA": {"miles": 1503, "awardMiles": 1503}, "TUN": {"miles": 1034, "awardMiles": 1034}, "NSI": {"miles": 2385, "awardMiles": 2385}, "BEY": {"miles": 2461, "awardMiles": 2461}, "DOH": {"miles": 3564, "awardMiles": 3564}, "JED": {"miles": 2959, "awardMiles": 2959}, "DXB": {"miles": 3777, "awardMiles": 3777}, "PKX": {"miles": 6239, "awardMiles": 6239}, "MED": {"miles": 2900, "awardMiles": 2900}, "TLV": {"miles": 2458, "awardMiles": 2458}, "RUH": {"miles": 3291, "awardMiles": 3291}, "MIA": {"miles": 4313, "awardMiles": 4313}, "LAX": {"miles": 5978, "awardMiles": 5978}, "JFK": {"miles": 3609, "awardMiles": 3609}, "YYZ": {"miles": 3831, "awardMiles": 3831}, "GRU": {"miles": 4691, "awardMiles": 4691}, "IAD": {"miles": 3812, "awardMiles": 3812}, "YUL": {"miles": 3527, "awardMiles": 3527}, "CMN": {"miles": 0, "awardMiles": 0}}, "meta": {"ERH": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Errachidia", "zh": "拉希迪耶"}, "airport": {"en": "Moulay Ali Cherif Airport", "zh": "穆莱·阿里·谢里夫机场"}}, "AHU": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Al Hoceima", "zh": "胡塞马"}, "airport": {"en": "Cherif Al Idrissi Airport", "zh": "谢里夫·阿尔·伊德里西机场"}}, "AGA": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Agadir", "zh": "阿加迪尔"}, "airport": {"en": "Agadir Al Massira Airport", "zh": "阿加迪尔马西拉机场"}}, "VIL": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Dakhla", "zh": "达赫拉"}, "airport": {"en": "Dakhla Airport", "zh": "达赫拉机场"}}, "FEZ": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Fez", "zh": "非斯"}, "airport": {"en": "Fes Sais Airport", "zh": "非斯萨伊斯机场"}}, "GLN": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Guelmim", "zh": "盖勒敏"}, "airport": {"en": "Guelmim Airport", "zh": "盖勒敏机场"}}, "RAK": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Marrakech", "zh": "马拉喀什"}, "airport": {"en": "Marrakesh Menara Airport", "zh": "马拉喀什梅纳拉机场"}}, "EUN": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Laayoune", "zh": "阿尤恩"}, "airport": {"en": "Hassan I Airport", "zh": "哈桑一世机场"}}, "NDR": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Nador", "zh": "纳祖尔"}, "airport": {"en": "Nador International Airport", "zh": "纳祖尔国际机场"}}, "OZZ": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Ouarzazate", "zh": "瓦尔扎扎特"}, "airport": {"en": "Ouarzazate Airport", "zh": "瓦尔扎扎特机场"}}, "RBA": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Rabat", "zh": "拉巴特"}, "airport": {"en": "Rabat Sale Airport", "zh": "拉巴特萨累机场"}}, "OUD": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Oujda", "zh": "乌季达"}, "airport": {"en": "Oujda Angads Airport", "zh": "乌季达安加兹机场"}}, "SMW": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Smara", "zh": "斯马拉"}, "airport": {"en": "Smara Airport", "zh": "斯马拉机场"}}, "TTA": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Tan Tan", "zh": "坦坦"}, "airport": {"en": "Tan Tan Airport", "zh": "坦坦机场"}}, "TNG": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Tangier", "zh": "丹吉尔"}, "airport": {"en": "Tangier Ibn Battouta Airport", "zh": "丹吉尔伊本·白图泰机场"}}, "TTU": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Tetouan", "zh": "得土安"}, "airport": {"en": "Sania Ramel Airport", "zh": "萨尼亚拉梅尔机场"}}, "OZG": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Zagora", "zh": "扎古拉"}, "airport": {"en": "Zagora Airport", "zh": "扎古拉机场"}}, "CMN": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Morocco", "zh": "摩洛哥"}, "city": {"en": "Casablanca", "zh": "卡萨布兰卡"}, "airport": {"en": "Mohammed V International Airport", "zh": "穆罕默德五世国际机场"}}, "AMS": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Netherlands", "zh": "荷兰"}, "city": {"en": "Amsterdam", "zh": "阿姆斯特丹"}, "airport": {"en": "Amsterdam Airport Schiphol", "zh": "阿姆斯特丹史基浦机场"}}, "ALC": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Alicante", "zh": "阿利坎特"}, "airport": {"en": "Alicante-Elche Miguel Hernandez Airport", "zh": "阿利坎特-埃尔切米格尔·埃尔南德斯机场"}}, "BCN": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Barcelona", "zh": "巴塞罗那"}, "airport": {"en": "Josep Tarradellas Barcelona-El Prat Airport", "zh": "巴塞罗那埃尔普拉特机场"}}, "BIO": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Bilbao", "zh": "毕尔巴鄂"}, "airport": {"en": "Bilbao Airport", "zh": "毕尔巴鄂机场"}}, "BLQ": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Bologna", "zh": "博洛尼亚"}, "airport": {"en": "Bologna Guglielmo Marconi Airport", "zh": "博洛尼亚古列尔莫·马可尼机场"}}, "BOD": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Bordeaux", "zh": "波尔多"}, "airport": {"en": "Bordeaux-Merignac Airport", "zh": "波尔多梅里尼亚克机场"}}, "CTA": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Catania", "zh": "卡塔尼亚"}, "airport": {"en": "Catania-Fontanarossa Airport", "zh": "卡塔尼亚丰塔纳罗萨机场"}}, "BRU": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Belgium", "zh": "比利时"}, "city": {"en": "Brussels", "zh": "布鲁塞尔"}, "airport": {"en": "Brussels Airport", "zh": "布鲁塞尔机场"}}, "FRA": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Germany", "zh": "德国"}, "city": {"en": "Frankfurt", "zh": "法兰克福"}, "airport": {"en": "Frankfurt Airport", "zh": "法兰克福机场"}}, "GVA": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Switzerland", "zh": "瑞士"}, "city": {"en": "Geneva", "zh": "日内瓦"}, "airport": {"en": "Geneva Airport", "zh": "日内瓦机场"}}, "IST": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Türkiye", "zh": "土耳其"}, "city": {"en": "Istanbul", "zh": "伊斯坦布尔"}, "airport": {"en": "Istanbul Airport", "zh": "伊斯坦布尔机场"}}, "LPA": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Las Palmas", "zh": "拉斯帕尔马斯"}, "airport": {"en": "Gran Canaria Airport", "zh": "大加那利机场"}}, "LIL": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Lille", "zh": "里尔"}, "airport": {"en": "Lille Airport", "zh": "里尔机场"}}, "LIS": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Portugal", "zh": "葡萄牙"}, "city": {"en": "Lisbon", "zh": "里斯本"}, "airport": {"en": "Humberto Delgado Airport", "zh": "温贝托·德尔加多机场"}}, "LHR": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "United Kingdom", "zh": "英国"}, "city": {"en": "London", "zh": "伦敦"}, "airport": {"en": "Heathrow Airport", "zh": "希思罗机场"}}, "LYS": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Lyon", "zh": "里昂"}, "airport": {"en": "Lyon-Saint Exupery Airport", "zh": "里昂圣埃克絮佩里机场"}}, "MAD": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Madrid", "zh": "马德里"}, "airport": {"en": "Adolfo Suarez Madrid-Barajas Airport", "zh": "阿道弗·苏亚雷斯马德里-巴拉哈斯机场"}}, "AGP": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Malaga", "zh": "马拉加"}, "airport": {"en": "Malaga-Costa del Sol Airport", "zh": "马拉加太阳海岸机场"}}, "MAN": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "United Kingdom", "zh": "英国"}, "city": {"en": "Manchester", "zh": "曼彻斯特"}, "airport": {"en": "Manchester Airport", "zh": "曼彻斯特机场"}}, "MRS": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Marseille", "zh": "马赛"}, "airport": {"en": "Marseille Provence Airport", "zh": "马赛普罗旺斯机场"}}, "MXP": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Milan", "zh": "米兰"}, "airport": {"en": "Milan Malpensa Airport", "zh": "米兰马尔彭萨机场"}}, "MPL": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Montpellier", "zh": "蒙彼利埃"}, "airport": {"en": "Montpellier-Mediterranee Airport", "zh": "蒙彼利埃地中海机场"}}, "DME": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Russia", "zh": "俄罗斯"}, "city": {"en": "Moscow", "zh": "莫斯科"}, "airport": {"en": "Moscow Domodedovo Airport", "zh": "莫斯科多莫杰多沃机场"}}, "MUC": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Germany", "zh": "德国"}, "city": {"en": "Munich", "zh": "慕尼黑"}, "airport": {"en": "Munich Airport", "zh": "慕尼黑机场"}}, "NTE": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Nantes", "zh": "南特"}, "airport": {"en": "Nantes Atlantique Airport", "zh": "南特大西洋机场"}}, "NAP": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Naples", "zh": "那不勒斯"}, "airport": {"en": "Naples International Airport", "zh": "那不勒斯国际机场"}}, "NCE": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Nice", "zh": "尼斯"}, "airport": {"en": "Nice Cote d'Azur Airport", "zh": "尼斯蔚蓝海岸机场"}}, "CDG": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Paris", "zh": "巴黎"}, "airport": {"en": "Paris Charles de Gaulle Airport", "zh": "巴黎夏尔·戴高乐机场"}}, "LED": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Russia", "zh": "俄罗斯"}, "city": {"en": "Saint Petersburg", "zh": "圣彼得堡"}, "airport": {"en": "Pulkovo Airport", "zh": "普尔科沃机场"}}, "OPO": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Portugal", "zh": "葡萄牙"}, "city": {"en": "Porto", "zh": "波尔图"}, "airport": {"en": "Francisco Sa Carneiro Airport", "zh": "弗朗西斯科·萨·卡内罗机场"}}, "FCO": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Rome", "zh": "罗马"}, "airport": {"en": "Leonardo da Vinci-Fiumicino Airport", "zh": "罗马菲乌米奇诺机场"}}, "SVQ": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Seville", "zh": "塞维利亚"}, "airport": {"en": "Seville Airport", "zh": "塞维利亚机场"}}, "TFS": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Tenerife", "zh": "特内里费"}, "airport": {"en": "Tenerife South Airport", "zh": "特内里费南机场"}}, "SXB": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Strasbourg", "zh": "斯特拉斯堡"}, "airport": {"en": "Strasbourg Airport", "zh": "斯特拉斯堡机场"}}, "TLS": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "France", "zh": "法国"}, "city": {"en": "Toulouse", "zh": "图卢兹"}, "airport": {"en": "Toulouse-Blagnac Airport", "zh": "图卢兹布拉尼亚克机场"}}, "TRN": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Turin", "zh": "都灵"}, "airport": {"en": "Turin Airport", "zh": "都灵机场"}}, "VLC": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Spain", "zh": "西班牙"}, "city": {"en": "Valencia", "zh": "瓦伦西亚"}, "airport": {"en": "Valencia Airport", "zh": "瓦伦西亚机场"}}, "VRN": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Verona", "zh": "维罗纳"}, "airport": {"en": "Verona Villafranca Airport", "zh": "维罗纳维拉弗兰卡机场"}}, "VCE": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Italy", "zh": "意大利"}, "city": {"en": "Venice", "zh": "威尼斯"}, "airport": {"en": "Venice Marco Polo Airport", "zh": "威尼斯马可·波罗机场"}}, "ZRH": {"continent": {"en": "Europe", "zh": "欧洲"}, "country": {"en": "Switzerland", "zh": "瑞士"}, "city": {"en": "Zurich", "zh": "苏黎世"}, "airport": {"en": "Zurich Airport", "zh": "苏黎世机场"}}, "ABJ": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Côte d'Ivoire", "zh": "科特迪瓦"}, "city": {"en": "Abidjan", "zh": "阿比让"}, "airport": {"en": "Felix-Houphouet-Boigny International Airport", "zh": "费利克斯·乌弗埃-博瓦尼国际机场"}}, "ABV": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Nigeria", "zh": "尼日利亚"}, "city": {"en": "Abuja", "zh": "阿布贾"}, "airport": {"en": "Nnamdi Azikiwe International Airport", "zh": "纳姆迪·阿齐基韦国际机场"}}, "ACC": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Ghana", "zh": "加纳"}, "city": {"en": "Accra", "zh": "阿克拉"}, "airport": {"en": "Kotoka International Airport", "zh": "科托卡国际机场"}}, "ALG": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Algeria", "zh": "阿尔及利亚"}, "city": {"en": "Algiers", "zh": "阿尔及尔"}, "airport": {"en": "Houari Boumediene Airport", "zh": "胡阿里·布迈丁机场"}}, "BKO": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Mali", "zh": "马里"}, "city": {"en": "Bamako", "zh": "巴马科"}, "airport": {"en": "Modibo Keita International Airport", "zh": "莫迪博·凯塔国际机场"}}, "BGF": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Central African Republic", "zh": "中非共和国"}, "city": {"en": "Bangui", "zh": "班吉"}, "airport": {"en": "Bangui M'Poko International Airport", "zh": "班吉姆波科国际机场"}}, "BJL": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Gambia", "zh": "冈比亚"}, "city": {"en": "Banjul", "zh": "班珠尔"}, "airport": {"en": "Banjul International Airport", "zh": "班珠尔国际机场"}}, "OXB": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Guinea-Bissau", "zh": "几内亚比绍"}, "city": {"en": "Bissau", "zh": "比绍"}, "airport": {"en": "Osvaldo Vieira International Airport", "zh": "奥斯瓦尔多·维埃拉国际机场"}}, "BZV": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Republic of the Congo", "zh": "刚果共和国"}, "city": {"en": "Brazzaville", "zh": "布拉柴维尔"}, "airport": {"en": "Maya-Maya Airport", "zh": "马亚-马亚机场"}}, "CKY": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Guinea", "zh": "几内亚"}, "city": {"en": "Conakry", "zh": "科纳克里"}, "airport": {"en": "Ahmed Sekou Toure International Airport", "zh": "艾哈迈德·塞古·杜尔国际机场"}}, "COO": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Benin", "zh": "贝宁"}, "city": {"en": "Cotonou", "zh": "科托努"}, "airport": {"en": "Cotonou Cadjehoun Airport", "zh": "科托努卡杰洪机场"}}, "DSS": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Senegal", "zh": "塞内加尔"}, "city": {"en": "Dakar", "zh": "达喀尔"}, "airport": {"en": "Blaise Diagne International Airport", "zh": "布莱兹·迪亚涅国际机场"}}, "DLA": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Cameroon", "zh": "喀麦隆"}, "city": {"en": "Douala", "zh": "杜阿拉"}, "airport": {"en": "Douala International Airport", "zh": "杜阿拉国际机场"}}, "FIH": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Democratic Republic of the Congo", "zh": "刚果民主共和国"}, "city": {"en": "Kinshasa", "zh": "金沙萨"}, "airport": {"en": "N'djili International Airport", "zh": "恩吉利国际机场"}}, "FNA": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Sierra Leone", "zh": "塞拉利昂"}, "city": {"en": "Freetown", "zh": "弗里敦"}, "airport": {"en": "Freetown International Airport", "zh": "弗里敦国际机场"}}, "LOS": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Nigeria", "zh": "尼日利亚"}, "city": {"en": "Lagos", "zh": "拉各斯"}, "airport": {"en": "Murtala Muhammed International Airport", "zh": "穆尔塔拉·穆罕默德国际机场"}}, "CAI": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Egypt", "zh": "埃及"}, "city": {"en": "Cairo", "zh": "开罗"}, "airport": {"en": "Cairo International Airport", "zh": "开罗国际机场"}}, "LBV": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Gabon", "zh": "加蓬"}, "city": {"en": "Libreville", "zh": "利伯维尔"}, "airport": {"en": "Leon-Mba International Airport", "zh": "利伯维尔莱昂·姆巴国际机场"}}, "LFW": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Togo", "zh": "多哥"}, "city": {"en": "Lome", "zh": "洛美"}, "airport": {"en": "Gnassingbe Eyadema International Airport", "zh": "纳辛贝·埃亚德马国际机场"}}, "LAD": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Angola", "zh": "安哥拉"}, "city": {"en": "Luanda", "zh": "罗安达"}, "airport": {"en": "Quatro de Fevereiro International Airport", "zh": "二月四日国际机场"}}, "ROB": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Liberia", "zh": "利比里亚"}, "city": {"en": "Monrovia", "zh": "蒙罗维亚"}, "airport": {"en": "Roberts International Airport", "zh": "罗伯茨国际机场"}}, "SSG": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Equatorial Guinea", "zh": "赤道几内亚"}, "city": {"en": "Malabo", "zh": "马拉博"}, "airport": {"en": "Malabo International Airport", "zh": "马拉博国际机场"}}, "NIM": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Niger", "zh": "尼日尔"}, "city": {"en": "Niamey", "zh": "尼亚美"}, "airport": {"en": "Diori Hamani International Airport", "zh": "迪奥里·哈马尼国际机场"}}, "NDJ": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Chad", "zh": "乍得"}, "city": {"en": "N'Djamena", "zh": "恩贾梅纳"}, "airport": {"en": "N'Djamena International Airport", "zh": "恩贾梅纳国际机场"}}, "NKC": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Mauritania", "zh": "毛里塔尼亚"}, "city": {"en": "Nouakchott", "zh": "努瓦克肖特"}, "airport": {"en": "Nouakchott-Oumtounsy International Airport", "zh": "努瓦克肖特-乌姆图恩西国际机场"}}, "RAI": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Cabo Verde", "zh": "佛得角"}, "city": {"en": "Praia", "zh": "普拉亚"}, "airport": {"en": "Nelson Mandela International Airport", "zh": "纳尔逊·曼德拉国际机场"}}, "PNR": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Republic of the Congo", "zh": "刚果共和国"}, "city": {"en": "Pointe-Noire", "zh": "黑角"}, "airport": {"en": "Pointe-Noire Airport", "zh": "黑角机场"}}, "SID": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Cabo Verde", "zh": "佛得角"}, "city": {"en": "Sal", "zh": "萨尔"}, "airport": {"en": "Amilcar Cabral International Airport", "zh": "阿米尔卡·卡布拉尔国际机场"}}, "MJI": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Libya", "zh": "利比亚"}, "city": {"en": "Tripoli", "zh": "的黎波里"}, "airport": {"en": "Mitiga International Airport", "zh": "米提加国际机场"}}, "OUA": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Burkina Faso", "zh": "布基纳法索"}, "city": {"en": "Ouagadougou", "zh": "瓦加杜古"}, "airport": {"en": "Thomas Sankara International Airport Ouagadougou", "zh": "瓦加杜古托马斯·桑卡拉国际机场"}}, "TUN": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Tunisia", "zh": "突尼斯"}, "city": {"en": "Tunis", "zh": "突尼斯"}, "airport": {"en": "Tunis-Carthage International Airport", "zh": "突尼斯-迦太基国际机场"}}, "NSI": {"continent": {"en": "Africa", "zh": "非洲"}, "country": {"en": "Cameroon", "zh": "喀麦隆"}, "city": {"en": "Yaounde", "zh": "雅温得"}, "airport": {"en": "Yaounde Nsimalen International Airport", "zh": "雅温得恩西马兰国际机场"}}, "BEY": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "Lebanon", "zh": "黎巴嫩"}, "city": {"en": "Beirut", "zh": "贝鲁特"}, "airport": {"en": "Beirut-Rafic Hariri International Airport", "zh": "贝鲁特-拉菲克·哈里里国际机场"}}, "DOH": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "Qatar", "zh": "卡塔尔"}, "city": {"en": "Doha", "zh": "多哈"}, "airport": {"en": "Hamad International Airport", "zh": "哈马德国际机场"}}, "JED": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "Saudi Arabia", "zh": "沙特阿拉伯"}, "city": {"en": "Jeddah", "zh": "吉达"}, "airport": {"en": "King Abdulaziz International Airport", "zh": "阿卜杜勒阿齐兹国王国际机场"}}, "DXB": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "United Arab Emirates", "zh": "阿联酋"}, "city": {"en": "Dubai", "zh": "迪拜"}, "airport": {"en": "Dubai International Airport", "zh": "迪拜国际机场"}}, "PKX": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "China", "zh": "中国"}, "city": {"en": "Beijing", "zh": "北京"}, "airport": {"en": "Beijing Daxing International Airport", "zh": "北京大兴国际机场"}}, "MED": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "Saudi Arabia", "zh": "沙特阿拉伯"}, "city": {"en": "Medina", "zh": "麦地那"}, "airport": {"en": "Prince Mohammad bin Abdulaziz International Airport", "zh": "穆罕默德·本·阿卜杜勒阿齐兹亲王国际机场"}}, "TLV": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "Israel", "zh": "以色列"}, "city": {"en": "Tel Aviv", "zh": "特拉维夫"}, "airport": {"en": "Ben Gurion Airport", "zh": "本·古里安机场"}}, "RUH": {"continent": {"en": "Asia", "zh": "亚洲"}, "country": {"en": "Saudi Arabia", "zh": "沙特阿拉伯"}, "city": {"en": "Riyadh", "zh": "利雅得"}, "airport": {"en": "King Khalid International Airport", "zh": "哈立德国王国际机场"}}, "MIA": {"continent": {"en": "North America", "zh": "北美洲"}, "country": {"en": "United States", "zh": "美国"}, "city": {"en": "Miami", "zh": "迈阿密"}, "airport": {"en": "Miami International Airport", "zh": "迈阿密国际机场"}}, "LAX": {"continent": {"en": "North America", "zh": "北美洲"}, "country": {"en": "United States", "zh": "美国"}, "city": {"en": "Los Angeles", "zh": "洛杉矶"}, "airport": {"en": "Los Angeles International Airport", "zh": "洛杉矶国际机场"}}, "JFK": {"continent": {"en": "North America", "zh": "北美洲"}, "country": {"en": "United States", "zh": "美国"}, "city": {"en": "New York", "zh": "纽约"}, "airport": {"en": "John F. Kennedy International Airport", "zh": "约翰·F·肯尼迪国际机场"}}, "YYZ": {"continent": {"en": "North America", "zh": "北美洲"}, "country": {"en": "Canada", "zh": "加拿大"}, "city": {"en": "Toronto", "zh": "多伦多"}, "airport": {"en": "Toronto Pearson International Airport", "zh": "多伦多皮尔逊国际机场"}}, "IAD": {"continent": {"en": "North America", "zh": "北美洲"}, "country": {"en": "United States", "zh": "美国"}, "city": {"en": "Washington", "zh": "华盛顿"}, "airport": {"en": "Washington Dulles International Airport", "zh": "华盛顿杜勒斯国际机场"}}, "YUL": {"continent": {"en": "North America", "zh": "北美洲"}, "country": {"en": "Canada", "zh": "加拿大"}, "city": {"en": "Montreal", "zh": "蒙特利尔"}, "airport": {"en": "Montreal-Trudeau International Airport", "zh": "蒙特利尔特鲁多国际机场"}}, "GRU": {"continent": {"en": "South America", "zh": "南美洲"}, "country": {"en": "Brazil", "zh": "巴西"}, "city": {"en": "Sao Paulo", "zh": "圣保罗"}, "airport": {"en": "Sao Paulo/Guarulhos International Airport", "zh": "圣保罗瓜鲁柳斯国际机场"}}}};
+const $ = id => document.getElementById(id);
+const airports = DATA.airports;
+const META = DATA.meta;
+const HUB = DATA.hub || "CMN";
+const codes = Object.keys(airports).sort();
+const popular = ["CMN","PKX","GRU","JFK","LAX","YUL","CDG","LHR","DXB","DSS"];
+
+let lang = "zh";
+let origin = "PKX";
+let destination = "GRU";
+let cabinMode = "economy";
+let targetMode = "platinum";
+let booster = 3;
+let pickerTarget = "origin";
+let quickMode = "popular";
+
+const T = {
+zh:{
+ subtitle:"摩洛哥皇家航空",
+ config:"01 // 搜索条件",routeSection:"出发地",roundTrip:"往返",roundTripDesc:"勾选：去程 + 回程；取消：仅计算单程",cabinSection:"舱位类型",
+ economy:"经济舱",business:"商务舱",mixed:"混舱",mixedDesc:"经济 + 商务",fareSection:"去程 / 回程累计",
+ outbound:"去程",return:"回程",targetSection:"目标会籍",boosterSection:"Status Booster",none:"无",
+ currentSection:"当前进度",currentStatus:"当前 Status Miles",currentRam:"其中 RAM Status Miles",advancedControls:"高级计算",statusMapTitle:"会籍对应关系",statusMapSub:"Safar Flyer 与 oneworld 等级映射",sfStatus:"Safar Flyer 等级",owStatus:"oneworld 对应等级",
+ result:"02 // 方案结果",baseOneWay:"单程基础",outStatus:"去程 Status Miles",retStatus:"回程 Status Miles",
+ tripTotal:"本次行程",finalTotal:"年度累计",targetMetric:"目标",totalProgress:"总 Status Miles",
+ ramProgress:"RAM Status Miles",ranking:"03 // 目的地排名",rankingHint:"按当前舱位与 Booster 实时计算",
+ tableSearch:"搜索国家 / 城市 / 机场 / 三字码",sortRequired:"按达标所需里程（由少到多）",sortStatus:"按 Status Miles（由高到低）",sortBase:"按基础里程（由高到低）",
+ passOnlyFixed:"✓ 仅显示达标路线",neededCol:"达标最低所需",surplusCol:"达标余量",destinationCol:"目的地",continentCountry:"大洲 / 国家",
+ baseCol:"单程基础",tripCol:"本次 Status Miles",yearCol:"年度累计",statusCol:"状态",
+ footer:"机场基数来自 RAM 官方 Miles Calculator 数据；非 CMN 两点之间按 A → CMN → B 本地拼接。",
+ airportSearch:"搜索 IATA / 国家 / 城市 / 机场名",quickSearch:"快捷筛选",selectOrigin:"选择出发机场",
+ selectDestination:"选择到达机场",popular:"热门",all:"全部",africa:"非洲",europe:"欧洲",asia:"亚洲",
+ northAmerica:"北美洲",southAmerica:"南美洲",morocco:"摩洛哥",pass:"达标",fail:"未达标",
+ targetPass:"已满足升级要求",targetFail:"尚未满足升级要求",needTotal:"总里程还差",needRam:"RAM 里程还差",
+ officialBase:"官网基础值",zeroWarning:"该机场的官方基础值为 0，可能是官网接口当前无有效累计数据。",
+ assumption:"本工具按所选航点经 CMN 拼接，并假设这些航段均可计入 RAM 自营贡献；实际出票时仍应核对 marketed / operated carrier。",
+ noResult:"没有匹配的机场",economyEssential:"经济 Essential · 50%",economyClassic:"经济 Classic · 100%",
+ economyFlex:"经济 Flex · 150%",businessClassic:"商务 Classic · 150%",businessFlex:"商务 Flex · 200%",
+ outCabin:"去程舱位",retCabin:"回程舱位"
+},
+en:{
+ subtitle:"ROYAL AIR MAROC",
+ config:"01 // SEARCH",routeSection:"Origin",roundTrip:"Round trip",roundTripDesc:"Checked: outbound + return; unchecked: one-way only",cabinSection:"Cabin",
+ economy:"Economy",business:"Business",mixed:"Mixed",mixedDesc:"Economy + Business",fareSection:"Outbound / Return accrual",
+ outbound:"Outbound",return:"Return",targetSection:"Target status",boosterSection:"Status Booster",none:"None",
+ currentSection:"Current progress",currentStatus:"Current Status Miles",currentRam:"Current RAM Status Miles",advancedControls:"Advanced calculation",statusMapTitle:"Status equivalence",statusMapSub:"Safar Flyer to oneworld tier mapping",sfStatus:"Safar Flyer Status",owStatus:"oneworld Equivalent Status",
+ result:"02 // RESULT",baseOneWay:"Base one-way",outStatus:"Outbound Status Miles",retStatus:"Return Status Miles",
+ tripTotal:"Trip total",finalTotal:"Year total",targetMetric:"Target",totalProgress:"Total Status Miles",
+ ramProgress:"RAM Status Miles",ranking:"03 // DESTINATION RANKING",rankingHint:"Calculated with current cabin and Booster",
+ tableSearch:"Search country / city / airport / IATA",sortRequired:"Minimum miles to qualify",sortStatus:"Status Miles (high to low)",sortBase:"Base miles (high to low)",
+ passOnlyFixed:"✓ Passing routes only",neededCol:"Minimum required",surplusCol:"Surplus",destinationCol:"Destination",continentCountry:"Continent / Country",
+ baseCol:"Base one-way",tripCol:"Trip Status Miles",yearCol:"Year total",statusCol:"Status",
+ footer:"Airport base values come from RAM Miles Calculator data; non-CMN pairs are composed locally as A → CMN → B.",
+ airportSearch:"Search IATA / country / city / airport",quickSearch:"Quick filters",selectOrigin:"Select origin airport",
+ selectDestination:"Select destination airport",popular:"Popular",all:"All",africa:"Africa",europe:"Europe",asia:"Asia",
+ northAmerica:"North America",southAmerica:"South America",morocco:"Morocco",pass:"PASS",fail:"FAIL",
+ targetPass:"Upgrade requirement satisfied",targetFail:"Upgrade requirement not yet satisfied",needTotal:"Total miles short",
+ needRam:"RAM miles short",officialBase:"Official base",zeroWarning:"This airport has a 0 official base value, which may indicate no valid earning result from the official calculator.",
+ assumption:"Routes are composed via CMN and assumed to count toward the RAM-operated contribution; verify marketed / operated carrier when ticketing.",
+ noResult:"No matching airport",economyEssential:"Economy Essential · 50%",economyClassic:"Economy Classic · 100%",
+ economyFlex:"Economy Flex · 150%",businessClassic:"Business Classic · 150%",businessFlex:"Business Flex · 200%",
+ outCabin:"Outbound cabin",retCabin:"Return cabin"
+}};
+
+const fareOptions = {
+ economy:[["0.5","economyEssential"],["1","economyClassic"],["1.5","economyFlex"]],
+ business:[["1.5","businessClassic"],["2","businessFlex"]]
+};
+
+function tx(k){ return T[lang][k] || k; }
+function fmt(n){ return Number.isFinite(n) ? Math.round(n).toLocaleString() : "-"; }
+function m(code){ return Number(airports[code]?.miles ?? 0); }
+function md(code){ return META[code]; }
+function loc(obj){ return obj?.[lang] || ""; }
+function fullAirport(code){
+  const x=md(code);
+  return `${loc(x.country)} · ${loc(x.city)} · ${loc(x.airport)} (${code})`;
+}
+function compactMeta(code){
+  const x=md(code);
+  return `${loc(x.continent)} · ${loc(x.country)} · ${loc(x.city)}`;
+}
+function searchText(code){
+  const x=md(code);
+  return [code,x.continent.en,x.continent.zh,x.country.en,x.country.zh,x.city.en,x.city.zh,x.airport.en,x.airport.zh].join(" ").toLowerCase();
+}
+function baseBetween(a,b){
+  if(a===b) return 0;
+  if(a===HUB) return m(b);
+  if(b===HUB) return m(a);
+  return m(a)+m(b);
+}
+function targetConfig(){
+  if(targetMode==="gold") return {name:"GOLD", total:35000, ram:17500, mode:"upgrade"};
+  if(targetMode==="platinum_retain") return {name:"PLATINUM 保级", total:70000, ram:37500, mode:"retain"};
+  return {name:"PLATINUM 升级", total:75000, ram:37500, mode:"upgrade"};
+}
+function currentCabin(direction){
+  if(cabinMode==="mixed") return $(direction==="out"?"outCabinType":"retCabinType").value;
+  return cabinMode;
+}
+function currentAccrual(direction){
+  return Number($(direction==="out"?"outFare":"retFare").value || 1);
+}
+function setChoice(groupId,value){
+  document.querySelectorAll(`#${groupId} .choice`).forEach(el=>el.classList.toggle("active",el.dataset.value==String(value)));
+}
+function airportButton(target){
+  const code=target==="origin"?origin:destination;
+  const x=md(code);
+  return `<span class="airport-code">${code}</span><span class="airport-summary"><div class="airport-main">${loc(x.country)} · ${loc(x.city)} · ${loc(x.airport)} (${code})</div><div class="airport-sub">${loc(x.continent)} · ${x.airport.en} (${code})</div></span>`;
+}
+function updateAirportButtons(){
+  $("originBtn").innerHTML=airportButton("origin");
+}
+function populateFareSelect(selectId,cabin,preferred){
+  const el=$(selectId);
+  const opts=fareOptions[cabin]||fareOptions.economy;
+  el.innerHTML=opts.map(([v,k])=>`<option value="${v}">${tx(k)}</option>`).join("");
+  if(opts.some(([v])=>v===String(preferred))) el.value=String(preferred);
+}
+function updateCabinUI(){
+  const isMixed=cabinMode==="mixed";
+  $("outCabinType").style.display=isMixed?"block":"none";
+  $("retCabinType").style.display=isMixed?"block":"none";
+  document.querySelectorAll(".mix-row").forEach(el=>el.style.gridTemplateColumns=isMixed?"86px 1fr":"1fr");
+  if(!isMixed){
+    $("outCabinType").value=cabinMode;
+    $("retCabinType").value=cabinMode;
+  }
+  const oc=currentCabin("out"), rc=currentCabin("ret");
+  const oldOut=$("outFare").value || (oc==="business"?"1.5":"1");
+  const oldRet=$("retFare").value || (rc==="business"?"1.5":"1");
+  populateFareSelect("outFare",oc,oldOut);
+  populateFareSelect("retFare",rc,oldRet);
+}
+function syncTripModeUI(){
+  const isRoundTrip=$("roundTrip").checked;
+  ["retCabinType","retFare"].forEach(id=>{
+    $(id).disabled=!isRoundTrip;
+    $(id).style.opacity=isRoundTrip?"1":"0.45";
+    $(id).style.cursor=isRoundTrip?"":"not-allowed";
+  });
+}
+function cabinLabel(direction){
+  const c=currentCabin(direction), a=currentAccrual(direction);
+  const key=c==="business"?(a===2?"businessFlex":"businessClassic"):(a===.5?"economyEssential":a===1.5?"economyFlex":"economyClassic");
+  return tx(key);
+}
+
+function calculate(){
+  syncTripModeUI();
+  const base=baseBetween(origin,destination);
+  const outA=currentAccrual("out"), retA=currentAccrual("ret");
+  const isRoundTrip=$("roundTrip").checked;
+  const out=Math.round(base*outA*booster);
+  const ret=isRoundTrip ? Math.round(base*retA*booster) : 0;
+  const trip=out+ret;
+  const cur=Number($("currentStatus").value||0);
+  const curRam=Number($("currentRam").value||0);
+  const final=cur+trip, finalRam=curRam+trip;
+  const target=targetConfig();
+  const totalPass=final>=target.total, ramPass=finalRam>=target.ram, pass=totalPass&&ramPass;
+
+  $("heroOrigin").textContent=origin;
+  $("heroDestination").textContent=destination;
+  $("heroOriginMeta").textContent=fullAirport(origin);
+  $("heroDestinationMeta").textContent=fullAirport(destination);
+  $("baseMiles").textContent=fmt(base);
+  $("outStatus").textContent=fmt(out);
+  $("retStatus").textContent=fmt(ret);
+  $("tripTotal").textContent=fmt(trip);
+  $("finalTotal").textContent=fmt(final);
+  $("targetName").textContent=target.name;
+  const rankingStrong=document.querySelector(".panel-head strong[data-t='ranking']");
+  if(rankingStrong) rankingStrong.textContent=(lang==="zh" ? `03 // 目的地排名 · ${isRoundTrip?"往返":"单程"}` : `03 // DESTINATION RANKING · ${isRoundTrip?"ROUND TRIP":"ONE WAY"}`);
+  $("targetRequirement").textContent=`${fmt(target.total)} · RAM ${fmt(target.ram)}`;
+  $("outSub").textContent=`${cabinLabel("out")} · ${booster}X`;
+  $("retSub").textContent=isRoundTrip ? `${cabinLabel("ret")} · ${booster}X` : (lang==="zh" ? "单程模式 · 不计算回程" : "ONE-WAY · RETURN NOT COUNTED");
+
+  $("totalFill").style.width=Math.min(100,final/target.total*100)+"%";
+  $("ramFill").style.width=Math.min(100,finalRam/target.ram*100)+"%";
+  $("totalProgressValue").innerHTML=`<span class="${totalPass?"green":"pink"}">${fmt(final)} / ${fmt(target.total)}</span>`;
+  $("ramProgressValue").innerHTML=`<span class="${ramPass?"green":"pink"}">${fmt(finalRam)} / ${fmt(target.ram)}</span>`;
+  $("statusTitle").textContent=pass?tx("targetPass"):tx("targetFail");
+  $("statusBadge").textContent=pass?tx("pass"):tx("fail");
+  $("statusBadge").className="status-title "+(pass?"status-pass":"status-fail");
+  const totalGap=Math.max(0,target.total-final), ramGap=Math.max(0,target.ram-finalRam);
+  $("statusDetail").textContent=pass ? `${target.name} ✓` : `${tx("needTotal")}: ${fmt(totalGap)} · ${tx("needRam")}: ${fmt(ramGap)}`;
+
+  const om=m(origin), dm=m(destination);
+  const legData=[
+    [origin,HUB, origin===HUB?0:om, true],
+    [HUB,destination, destination===HUB?0:dm, true],
+    [destination,HUB, destination===HUB?0:dm, isRoundTrip],
+    [HUB,origin, origin===HUB?0:om, isRoundTrip]
+  ];
+  legData.forEach((x,i)=>{
+    $(`leg${i+1}Code`).textContent=`${x[0]} → ${x[1]}`;
+    $(`leg${i+1}Meta`).textContent=tx("officialBase");
+    $(`leg${i+1}Miles`).textContent=x[3]?fmt(x[2]):"—";
+    $(`leg${i+1}Meta`).textContent=x[3]?tx("officialBase"):(lang==="zh"?"单程模式":"ONE-WAY");
+  });
+
+  const zero=(origin!==HUB&&om===0)||(destination!==HUB&&dm===0);
+  $("note").innerHTML=zero?`<span class="pink">⚠ ${tx("zeroWarning")}</span>`:tx("assumption");
+  renderTable();
+}
+
+function renderTable(){
+  const q=$("tableSearch").value.trim().toLowerCase();
+  const sort=$("sortMode").value;
+  const target=targetConfig();
+  const cur=Number($("currentStatus").value||0);
+  const curRam=Number($("currentRam").value||0);
+  const outA=currentAccrual("out"), retA=currentAccrual("ret");
+  const isRoundTrip=$("roundTrip").checked;
+
+  // 当前状态下，要同时满足总定级里程与 RAM 最低贡献，
+  // 本次行程至少需要获得的 Status Miles。
+  const minimumRequired=Math.max(
+    0,
+    target.total-cur,
+    target.ram-curRam
+  );
+
+  let rows=codes.filter(c=>c!==origin).map(c=>{
+    const base=baseBetween(origin,c);
+    const trip=Math.round(base*outA*booster) + (isRoundTrip ? Math.round(base*retA*booster) : 0);
+    const total=cur+trip, ram=curRam+trip;
+    const pass=total>=target.total && ram>=target.ram;
+    const surplus=Math.max(0,trip-minimumRequired);
+    return {
+      code:c, base, trip, total, ram, pass,
+      valid:base>0, minimumRequired, surplus
+    };
+  }).filter(r=>{
+    if(!r.valid) return false;
+    if(!r.pass) return false;  // 选定会籍目标后，只展示达标结果
+    if(q && !searchText(r.code).includes(q)) return false;
+    return true;
+  });
+
+  rows.sort((a,b)=>{
+    if(sort==="required"){
+      // 达标所需里程排序：优先“刚刚够”的方案，
+      // 即达标余量最小；相同余量时，本次里程更少的优先。
+      return a.surplus-b.surplus || a.trip-b.trip;
+    }
+    if(sort==="base") return b.base-a.base;
+    return b.trip-a.trip;
+  });
+
+  $("tbody").innerHTML=rows.map((r,i)=>{
+    const x=md(r.code);
+    return `<tr data-code="${r.code}">
+      <td class="rank">${i+1}</td>
+      <td><div><span class="dest-code">${r.code}</span> · <span class="dest-name">${loc(x.city)} · ${loc(x.airport)} (${r.code})</span></div><div class="dest-meta">${x.airport.en} (${r.code})</div></td>
+      <td><div>${loc(x.continent)} · ${loc(x.country)}</div><div class="dest-meta">${x.continent.en} · ${x.country.en}</div></td>
+      <td>${fmt(r.base)}</td>
+      <td>${fmt(r.trip)}</td>
+      <td>${fmt(r.minimumRequired)}</td>
+      <td class="yellow">+${fmt(r.surplus)}</td>
+      <td>${fmt(r.total)}</td>
+      <td class="status-pass">${tx("pass")}</td>
+    </tr>`;
+  }).join("");
+
+  document.querySelectorAll("#tbody tr").forEach(tr=>tr.onclick=()=>{
+    destination=tr.dataset.code;
+    updateAirportButtons();
+    calculate();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
+
+function quickChips(){
+  const chips=[
+    ["popular","popular"],["all","all"],["Africa","africa"],["Europe","europe"],["Asia","asia"],
+    ["North America","northAmerica"],["South America","southAmerica"],["Morocco","morocco"]
+  ];
+  $("quickChips").innerHTML=chips.map(([v,k])=>`<button class="chip ${quickMode===v?"active":""}" data-v="${v}">${tx(k)}</button>`).join("");
+  document.querySelectorAll("#quickChips .chip").forEach(el=>el.onclick=()=>{quickMode=el.dataset.v;quickChips();renderPicker();});
+}
+function renderPicker(){
+  const q=$("airportSearch").value.trim().toLowerCase();
+  let list=codes.slice();
+  if(quickMode==="popular") list=popular.filter(c=>codes.includes(c));
+  else if(quickMode==="Morocco") list=list.filter(c=>md(c).country.en==="Morocco");
+  else if(quickMode!=="all") list=list.filter(c=>md(c).continent.en===quickMode);
+  if(q) list=list.filter(c=>searchText(c).includes(q));
+
+  list.sort((a,b)=>{
+    if(q){
+      const as=a.toLowerCase().startsWith(q)?0:1, bs=b.toLowerCase().startsWith(q)?0:1;
+      if(as!==bs) return as-bs;
+    }
+    return loc(md(a).country).localeCompare(loc(md(b).country),lang==="zh"?"zh-CN":"en");
+  });
+
+  $("pickerResults").innerHTML=list.length?list.map(c=>{
+    const x=md(c), zero=c!==HUB&&m(c)===0;
+    return `<button class="airport-item" data-code="${c}">
+      <div class="item-code">${c}</div>
+      <div>
+        <div class="item-name">${loc(x.country)} · ${loc(x.city)} · ${loc(x.airport)} (${c}) ${zero?'<span class="zero-badge">0 MI</span>':""}</div>
+        <div class="item-meta">${x.country.en} · ${x.city.en} · ${x.airport.en} (${c})</div>
+      </div>
+      <div class="item-continent">${loc(x.continent)}</div>
+    </button>`;
+  }).join(""):`<div class="empty">${tx("noResult")}</div>`;
+  document.querySelectorAll("#pickerResults .airport-item").forEach(el=>el.onclick=()=>{
+    const code=el.dataset.code;
+    if(pickerTarget==="origin") origin=code; else destination=code;
+    closePicker();updateAirportButtons();calculate();
+  });
+}
+function openPicker(target){
+  pickerTarget=target;quickMode="popular";$("airportSearch").value="";
+  $("pickerTitle").textContent=target==="origin"?tx("selectOrigin"):tx("selectDestination");
+  quickChips();renderPicker();$("airportModal").classList.add("show");
+  setTimeout(()=>$("airportSearch").focus(),30);
+}
+function closePicker(){ $("airportModal").classList.remove("show"); }
+
+function applyLanguage(){
+  document.documentElement.lang=lang==="zh"?"zh-CN":"en";
+  document.querySelectorAll("[data-t]").forEach(el=>{const k=el.dataset.t;if(T[lang][k])el.textContent=T[lang][k]});
+  document.querySelectorAll("[data-ph]").forEach(el=>{const k=el.dataset.ph;if(T[lang][k])el.placeholder=T[lang][k]});
+  $("langBtn").textContent=lang==="zh"?"EN":"中文";
+  updateCabinUI();updateAirportButtons();calculate();
+}
+
+document.querySelectorAll("[data-picker]").forEach(el=>el.onclick=()=>openPicker(el.dataset.picker));
+$("closePicker").onclick=closePicker;
+$("airportModal").onclick=e=>{if(e.target===$("airportModal"))closePicker()};
+$("airportSearch").addEventListener("input",()=>{if($("airportSearch").value)quickMode="all";quickChips();renderPicker();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closePicker()});
+
+$("langBtn").onclick=()=>{lang=lang==="zh"?"en":"zh";applyLanguage()};
+$("roundTrip").addEventListener("change", calculate);
+
+document.querySelectorAll("#cabinChoices .choice").forEach(el=>el.onclick=()=>{
+  cabinMode=el.dataset.value;setChoice("cabinChoices",cabinMode);
+  if(cabinMode==="mixed"){$("outCabinType").value="economy";$("retCabinType").value="business";}
+  updateCabinUI();calculate();
+});
+document.querySelectorAll("#targetChoices .choice").forEach(el=>el.onclick=()=>{
+  targetMode=el.dataset.value;setChoice("targetChoices",targetMode);calculate();
+});
+document.querySelectorAll("#boosterChoices .choice").forEach(el=>el.onclick=()=>{
+  booster=Number(el.dataset.value);setChoice("boosterChoices",booster);calculate();
+});
+["outCabinType","retCabinType"].forEach(id=>$(id).addEventListener("change",()=>{updateCabinUI();calculate()}));
+["outFare","retFare","currentStatus","currentRam","sortMode"].forEach(id=>$(id).addEventListener("input",calculate));
+$("tableSearch").addEventListener("input",renderTable);
+
+$("airportCount").textContent=codes.length;
+$("dataStamp").textContent=(DATA.generatedAt||"").replace("T"," ").slice(0,19)+"Z";
+const footerMeta=$("footerMeta");if(footerMeta)footerMeta.textContent=`${codes.length} AIRPORTS · CMN BASE DB`;
+updateCabinUI();
+applyLanguage();
+</script>
 </body>
 </html>
