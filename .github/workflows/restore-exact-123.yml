@@ -23,16 +23,20 @@ jobs:
           import hashlib, shutil
 
           expected = 'f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8'
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
+          s = Path('index.html').read_text(encoding='utf-8')
 
-          prefix = '\n\n\n/* Minimal requested changes:'
-          end_marker = '.metric .sub:not(#targetRequirement){display:none !important;}'
-          if prefix in s:
-              start = s.index(prefix)
+          start_marker = '/* Minimal requested changes:'
+          end_marker = '.status-top{display:none !important;}'
+          if start_marker in s:
+              start = s.index(start_marker)
+              while start > 0 and s[start-1] == '\n':
+                  start -= 1
               end = s.index(end_marker, start) + len(end_marker)
+              while end < len(s) and s[end] == '\n':
+                  end += 1
               s = s[:start] + s[end:]
 
+          s = s.replace('<p data-t="subtitle">Royal Air Maroc · miles planner</p>', '<p data-t="subtitle">Royal Air Maroc · CMN hub · miles planner</p>')
           s = s.replace('subtitle:"摩洛哥皇家航空 · 官方累计基数"', 'subtitle:"摩洛哥皇家航空 · CMN 枢纽 · 官方累计基数"')
           s = s.replace('subtitle:"ROYAL AIR MAROC · OFFICIAL MILES BASE"', 'subtitle:"ROYAL AIR MAROC · CMN HUB · OFFICIAL MILES BASE"')
 
@@ -43,7 +47,6 @@ jobs:
 
           Path('123.html').write_bytes(raw)
           Path('index.html').write_bytes(raw)
-
           Path('vercel.json').write_text('''{\n  "$schema": "https://openapi.vercel.sh/vercel.json",\n  "buildCommand": "mkdir -p dist && cp 123.html dist/index.html",\n  "outputDirectory": "dist",\n  "cleanUrls": true\n}\n''', encoding='utf-8')
 
           for f in ['build.js', '.github/workflows/materialize-index.yml', '.github/workflows/inspect-production.yml']:
