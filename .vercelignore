@@ -1,0 +1,4 @@
+.venv/
+.env*
+*.py
+123.json
