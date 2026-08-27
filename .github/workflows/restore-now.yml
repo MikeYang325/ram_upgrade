@@ -1,0 +1,48 @@
+name: Restore exact uploaded HTML now
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/restore-now.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore exact uploaded file
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const cp = require('child_process');
+          const zlib = require('zlib');
+          const crypto = require('crypto');
+          const ref = '66c5b5c0f74b623a77d57f91daeef5ebce6585bd';
+          let encoded = '';
+          for (let i=0;i<4;i++) {
+            encoded += cp.execFileSync('git',['show',`${ref}:_exact123/p${i}.b64`],{encoding:'utf8'}).replace(/\s+/g,'');
+          }
+          const raw = zlib.brotliDecompressSync(Buffer.from(encoded,'base64'));
+          const sha = crypto.createHash('sha256').update(raw).digest('hex');
+          const expected = 'f0bad52eadfe2915647fcb9e1a4fd4a40b9c159a28718f0bf4785d70b12d24f8';
+          if (raw.length !== 104651 || sha !== expected) throw new Error(`verify failed bytes=${raw.length} sha=${sha}`);
+          fs.writeFileSync('index.html', raw);
+          fs.writeFileSync('123.html', raw);
+          for (const p of ['vercel.json','build.js']) { try { fs.rmSync(p,{force:true}); } catch {} }
+          console.log(`EXACT_OK bytes=${raw.length} sha256=${sha}`);
+          NODE
+      - name: Commit exact HTML
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'deploy exact uploaded 123.html' || true
+          git push
