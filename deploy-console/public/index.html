@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111712" />
+    <title>Control Room — Local Deploy Console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail">
+        <a class="brand" href="#top"><span class="brand-mark">↗</span><span>CONTROL<br />ROOM</span></a>
+        <nav aria-label="Primary navigation">
+          <a class="active" href="#deploy">Deploy</a>
+          <a href="#history">History</a>
+          <a href="#connections">Connections</a>
+        </nav>
+        <div class="rail-foot"><span class="pulse"></span>LOCAL ONLY<br /><small>127.0.0.1</small></div>
+      </aside>
+
+      <main id="top">
+        <header class="topbar">
+          <div><p class="eyebrow">PERSONAL RELEASE DESK</p><h1>Deploy with intent.</h1></div>
+          <div class="live-state"><span class="pulse"></span><span>Local control plane<br /><strong>No token stored</strong></span></div>
+        </header>
+
+        <section class="summary" aria-label="Current repository state">
+          <div><span>Repository</span><strong id="repository">Checking local repository…</strong></div>
+          <div><span>Current branch</span><strong id="branch">—</strong></div>
+          <div><span>Current commit</span><strong class="mono" id="commit">—</strong></div>
+          <div><span>Production</span><a id="production" href="https://ram-upgrade.vercel.app" target="_blank" rel="noreferrer">ram-upgrade.vercel.app ↗</a></div>
+        </section>
+
+        <section class="deploy-card" id="deploy">
+          <div class="section-heading"><div><p class="eyebrow">01 / RELEASE</p><h2>Choose the exact code to ship</h2></div><span class="guardrail">Validated before publish</span></div>
+          <form id="deploy-form">
+            <label class="field"><span>Branch or commit</span><input id="ref" name="ref" value="main" autocomplete="off" spellcheck="false" /><small>Use <b>main</b>, a branch name, or a full Git commit ID.</small></label>
+            <label class="field"><span>Target</span><select id="target" name="target"><option value="vercel">Vercel prod.</option><option value="server" disabled>Private server · add SSH target first</option></select><small>Vercel production: ram-upgrade.vercel.app. It uses the local signed-in session; no access token is saved here.</small></label>
+            <div class="validation" id="validation" aria-live="polite"><span class="status-dot idle"></span><span>Enter a branch or commit, then verify it.</span></div>
+            <div class="actions"><button type="button" class="secondary" id="validate">Verify revision</button><button type="submit" class="primary" id="deploy-button">Deploy to production <span>→</span></button></div>
+          </form>
+        </section>
+
+        <section class="connections" id="connections">
+          <div class="section-heading"><div><p class="eyebrow">02 / CONNECTIONS</p><h2>Authority stays on this machine</h2></div><span class="quiet">Credentials are never committed</span></div>
+          <div class="connection-grid" id="connection-grid"><div class="loading-card">Checking connections…</div></div>
+        </section>
+
+        <section class="history" id="history">
+          <div class="section-heading"><div><p class="eyebrow">03 / RELEASE HISTORY</p><h2>Rollback is a deliberate choice</h2></div><button class="text-button" id="refresh-history">Refresh</button></div>
+          <div class="history-list" id="history-list"><div class="empty">No local releases recorded yet. Your first successful publish will appear here.</div></div>
+        </section>
+      </main>
+    </div>
+    <dialog id="log-dialog"><article><button class="close" aria-label="Close">×</button><p class="eyebrow">DEPLOYMENT LOG</p><h2 id="dialog-title">Release result</h2><pre id="dialog-log"></pre></article></dialog>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
