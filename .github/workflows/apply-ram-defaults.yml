@@ -1,0 +1,46 @@
+name: Apply RAM defaults
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch RAM defaults and target UI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          reps=[
+            ('let destination = "GRU";', 'let destination = "LED";'),
+            ('let cabinMode = "economy";', 'let cabinMode = "business";'),
+            ('<label class="choice active" data-value="economy">', '<label class="choice" data-value="economy">'),
+            ('<label class="choice" data-value="business">', '<label class="choice active" data-value="business">'),
+            ('<label class="choice" data-value="gold"><input type="radio" name="target"><div class="title">GOLD</div><div class="desc">35,000 · RAM 17,500</div></label>\n      <label class="choice active" data-value="platinum">', '<label class="choice" data-value="gold"><input type="radio" name="target"><div class="title">GOLD 升级</div><div class="desc">35,000 · RAM 17,500</div></label>\n      <label class="choice" data-value="gold_retain"><input type="radio" name="target"><div class="title">GOLD 保级</div><div class="desc">32,000 · RAM 17,500</div></label>\n      <label class="choice active" data-value="platinum">'),
+            ('if(targetMode==="gold") return {name:"GOLD", total:35000, ram:17500, mode:"upgrade"};\n  if(targetMode==="platinum_retain")', 'if(targetMode==="gold") return {name:"GOLD 升级", total:35000, ram:17500, mode:"upgrade"};\n  if(targetMode==="gold_retain") return {name:"GOLD 保级", total:32000, ram:17500, mode:"retain"};\n  if(targetMode==="platinum_retain")'),
+            ('<select class="control" id="sortMode">\n      <option value="required" data-t="sortRequired">', '<select class="control" id="sortMode">\n      <option value="distance" data-t="sortDistance">按飞行里程（由少到多）</option>\n      <option value="required" data-t="sortRequired">'),
+            ('if(sort==="required"){', 'if(sort==="distance") return a.base-b.base;\n    if(sort==="required"){'),
+            ('tableSearch:"搜索国家 / 城市 / 机场 / 三字码",sortRequired:', 'tableSearch:"搜索国家 / 城市 / 机场 / 三字码",sortDistance:"按飞行里程（由少到多）",sortRequired:'),
+            ('tableSearch:"Search country / city / airport / IATA",sortRequired:', 'tableSearch:"Search country / city / airport / IATA",sortDistance:"Flight distance (low to high)",sortRequired:'),
+          ]
+          for old,new in reps:
+            if old not in s:
+              raise SystemExit(f'missing replacement: {old[:80]}')
+            s=s.replace(old,new,1)
+          css='''\n/* Compact four-way target selector */\n#targetChoices{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}\n#targetChoices .choice{min-width:0;min-height:50px!important;padding:7px 3px!important;text-align:center}\n#targetChoices .choice .title{font-size:10px!important;white-space:nowrap;letter-spacing:-.02em}\n#targetChoices .choice .desc{font-size:8px!important;white-space:nowrap}\n@media(max-width:720px){#targetChoices{grid-template-columns:repeat(4,minmax(0,1fr))}}\n'''
+          marker='\n/* LoveFly family signature */'
+          if css.strip() not in s:
+            if marker not in s: raise SystemExit('CSS insertion marker missing')
+            s=s.replace(marker,css+marker,1)
+          p.write_text(s)
+          PY
+          rm .github/workflows/apply-ram-defaults.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html .github/workflows/apply-ram-defaults.yml
+          git commit -m "Add Gold retention and RAM default route"
+          git push
