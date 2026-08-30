@@ -1,4 +1,4 @@
-name: Finish EdgeOne Domain Migration
+name: Enable EdgeOne HTTPS
 
 on:
   push:
@@ -6,13 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  migrate-domains:
-    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'Finish EdgeOne domain migration after release'
+  https:
+    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'Enable HTTPS automatically'
     runs-on: ubuntu-latest
     env:
       EDGEONE_API_TOKEN: ${{ secrets.EDGEONE_API_TOKEN }}
     steps:
-      - name: Move custom domains to MikeYang325 projects
+      - name: Apply free HTTPS certificates
         shell: bash
         run: |
           set -euo pipefail
@@ -26,91 +26,42 @@ jobs:
               --data-binary "$1"
           }
 
-          api() {
-            local out
-            out="$(raw_api "$1")"
+          wait_domain() {
+            local pid="$1" domain="$2" out zone
+            for _ in $(seq 1 120); do
+              out="$(raw_api "$(jq -nc --arg pid "$pid" --arg d "$domain" '{Action:"DescribePagesZoneCustomDomains",ProjectId:$pid,Domain:$d}')")"
+              if jq -e '(.Code == 0) and ((.Data.Response.Error? // null) == null) and ((.Data.Response.Domain? // "") != "")' >/dev/null <<<"$out"; then
+                zone="$(jq -r '.Data.Response.ZoneId // empty' <<<"$out")"
+                if [ -n "$zone" ]; then
+                  printf '%s' "$zone"
+                  return 0
+                fi
+              fi
+              sleep 15
+            done
+            echo "$domain is not attached to the target project" >&2
+            return 1
+          }
+
+          apply_https() {
+            local pid="$1" domain="$2" zone out
+            zone="$(wait_domain "$pid" "$domain")"
+            echo "$domain zone: $zone"
+            out="$(raw_api "$(jq -nc --arg zone "$zone" --arg d "$domain" '{Action:"ModifyHostsCertificate",ZoneId:$zone,Hosts:[$d],Mode:"eofreecert"}')")"
             if ! jq -e '(.Code == 0) and ((.Data.Response.Error? // null) == null)' >/dev/null <<<"$out"; then
-              echo 'EdgeOne API failed:' >&2
+              echo "$domain HTTPS request failed:" >&2
               jq . <<<"$out" >&2 || true
               return 1
             fi
-            printf '%s' "$out"
+            echo "$domain free HTTPS certificate requested"
           }
 
-          project_by_id() {
-            api "$(jq -nc --arg pid "$1" '{Action:"DescribePagesProjects",Filters:[{Name:"ProjectId",Values:[$pid]}],Limit:10,Offset:0}')"
-          }
-
-          bind_with_release_wait() {
-            local pid="$1" domain="$2" out msg
-            for n in $(seq 1 50); do
-              out="$(raw_api "$(jq -nc --arg pid "$pid" --arg d "$domain" '{Action:"CreatePagesZoneCustomDomain",ProjectId:$pid,Domain:$d}')")"
-              if jq -e '(.Code == 0) and ((.Data.Response.Error? // null) == null)' >/dev/null <<<"$out"; then
-                echo "$domain bind succeeded on attempt $n"
-                printf '%s' "$out" | jq '.Data.Response | {Domain,Status,Cname,CurrentCname,ZoneId}'
-                return 0
-              fi
-              msg="$(jq -r '.Data.Response.Error.Message // .Message // "unknown error"' <<<"$out")"
-              echo "$domain bind attempt $n: $msg"
-              case "$msg" in
-                *'Domain resource is being released'*|*'Domain already exists in eo'*)
-                  sleep 15
-                  ;;
-                *)
-                  jq . <<<"$out" >&2
-                  return 1
-                  ;;
-              esac
-            done
-            return 1
-          }
-
-          verify_domain() {
-            local pid="$1" domain="$2" detail status code
-            for n in $(seq 1 45); do
-              sleep 5
-              detail="$(api "$(jq -nc --arg pid "$pid" --arg d "$domain" '{Action:"DescribePagesZoneCustomDomains",ProjectId:$pid,Domain:$d}')")"
-              status="$(jq -r '.Data.Response.Status // "unknown"' <<<"$detail")"
-              echo "$domain status: $status"
-              if [ "$status" = 'online' ]; then
-                printf '%s' "$detail" | jq '.Data.Response | {Domain,Status,Cname,CurrentCname,ZoneId}'
-                code="$(curl -L -sS --max-time 20 -o /dev/null -w '%{http_code}' "https://${domain}/" || true)"
-                echo "$domain HTTPS=$code"
-                return 0
-              fi
-            done
-            echo "$domain did not become online"
-            return 1
-          }
-
-          while IFS='|' read -r old_pid new_pid domain new_name; do
-            echo "=== $domain -> $new_name ==="
-
-            new_info="$(project_by_id "$new_pid")"
-            if jq -e --arg d "$domain" '.Data.Response.Projects[0].CustomDomains[]? | select(.Domain == $d)' >/dev/null <<<"$new_info"; then
-              echo "$domain already attached to $new_name"
-              verify_domain "$new_pid" "$domain" || true
-              continue
-            fi
-
-            old_info="$(project_by_id "$old_pid")"
-            if jq -e --arg d "$domain" '.Data.Response.Projects[0].CustomDomains[]? | select(.Domain == $d)' >/dev/null <<<"$old_info"; then
-              echo "unbind $domain from old project"
-              api "$(jq -nc --arg pid "$old_pid" --arg d "$domain" '{Action:"DeletePagesProjectCustomDomains",ProjectId:$pid,CustomDomains:[$d]}')" >/dev/null
-              echo "EdgeOne requires about 5 minutes to release the domain; waiting 310s"
-              sleep 310
-            else
-              echo "$domain already absent from old project"
-            fi
-
-            bind_with_release_wait "$new_pid" "$domain"
-            verify_domain "$new_pid" "$domain" || true
+          while IFS='|' read -r pid domain; do
+            apply_https "$pid" "$domain"
           done <<'DOMAINS'
-          makers-j78a9rcqplus|makers-fxgtk9g6t5ru|calendar.lovefly.club|ffl-calendar-new
-          makers-xd264t8fdurz|makers-1gm615g3c1pl|666.lovefly.club|fflmonitor-new
-          makers-mydii4lgessu|makers-cy3owonuavay|ram.lovefly.club|ram-upgrade-new
-          makers-nzei2cala27t|makers-o8z6etxne9wi|ca-miles.lovefly.club|ca-miles-new
-          makers-ewx6ar2jer95|makers-obojyavn3ssu|lovefly.club|loveflyclub-new
+          makers-fxgtk9g6t5ru|calendar.lovefly.club
+          makers-1gm615g3c1pl|666.lovefly.club
+          makers-cy3owonuavay|ram.lovefly.club
+          makers-o8z6etxne9wi|ca-miles.lovefly.club
+          makers-obojyavn3ssu|lovefly.club
           DOMAINS
-
-          echo '=== domain migration finished ==='
