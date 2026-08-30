@@ -1,4 +1,4 @@
-name: Migrate EdgeOne Projects
+name: Deploy and Migrate EdgeOne
 
 on:
   push:
@@ -6,58 +6,47 @@ on:
   workflow_dispatch:
 
 jobs:
-  migrate:
-    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'Migrate EdgeOne projects to MikeYang325'
+  deploy-migrate:
+    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'Deploy and retry EdgeOne domain migration'
     runs-on: ubuntu-latest
     env:
       EDGEONE_API_TOKEN: ${{ secrets.EDGEONE_API_TOKEN }}
     steps:
-      - name: Migrate and deploy all LoveFly projects
+      - name: Deploy old projects, then migrate domains with propagation wait
         shell: bash
         run: |
           set -euo pipefail
-
           API='https://pages-api.edgeone.ai/v1'
-          OWNER='MikeYang325'
-          STATE="$(mktemp)"
-          trap 'rm -f "$STATE"' EXIT
+          : "${EDGEONE_API_TOKEN:?EDGEONE_API_TOKEN is missing}"
 
-          if [ -z "${EDGEONE_API_TOKEN:-}" ]; then
-            echo 'EDGEONE_API_TOKEN is missing'
-            exit 1
-          fi
-
-          api() {
-            local payload="$1"
-            local out
-            out="$(curl -sS "$API" \
+          raw_api() {
+            curl -sS "$API" \
               -H 'Content-Type: application/json' \
               -H "Authorization: Bearer ${EDGEONE_API_TOKEN}" \
-              --data-binary "$payload")"
+              --data-binary "$1"
+          }
+
+          api() {
+            local out
+            out="$(raw_api "$1")"
             if ! jq -e '(.Code == 0) and ((.Data.Response.Error? // null) == null)' >/dev/null <<<"$out"; then
               echo 'EdgeOne API failed:' >&2
-              jq . <<<"$out" >&2 || printf '%s\n' "$out" >&2
+              jq . <<<"$out" >&2 || true
               return 1
             fi
             printf '%s' "$out"
-          }
-
-          project_by_name() {
-            api "$(jq -nc --arg name "$1" '{Action:"DescribePagesProjects",Filters:[{Name:"Name",Values:[$name]}],Limit:10,Offset:0}')"
           }
 
           project_by_id() {
             api "$(jq -nc --arg pid "$1" '{Action:"DescribePagesProjects",Filters:[{Name:"ProjectId",Values:[$pid]}],Limit:10,Offset:0}')"
           }
 
-          deploy_project() {
-            local pid="$1" name="$2"
-            local resp did status dresp commit preview
+          deploy_and_wait() {
+            local pid="$1" name="$2" resp did dresp status
             resp="$(api "$(jq -nc --arg pid "$pid" '{Action:"CreatePagesDeployment",ProjectId:$pid,ViaMeta:"Github",Provider:"Github",Env:"Production",RepoBranch:"main"}')")"
             did="$(jq -r '.Data.Response.DeploymentId // empty' <<<"$resp")"
-            [ -n "$did" ] || { echo "$name: missing DeploymentId"; exit 1; }
+            [ -n "$did" ] || { echo "$name missing DeploymentId"; exit 1; }
             echo "$name deployment: $did"
-
             for _ in $(seq 1 90); do
               sleep 4
               dresp="$(api "$(jq -nc --arg pid "$pid" --arg did "$did" '{Action:"DescribePagesDeployments",ProjectId:$pid,DeploymentIds:[$did],Limit:10,Offset:0}')")"
@@ -65,113 +54,87 @@ jobs:
               echo "$name status: $status"
               case "$status" in
                 Success)
-                  commit="$(jq -r '.Data.Response.Deployments[0].RepoCommitHash // ""' <<<"$dresp")"
-                  preview="$(jq -r '.Data.Response.Deployments[0].PreviewUrl // ""' <<<"$dresp")"
-                  echo "$name commit: $commit"
-                  echo "$name preview: $preview"
+                  echo "$name commit: $(jq -r '.Data.Response.Deployments[0].RepoCommitHash // ""' <<<"$dresp")"
                   return 0
                   ;;
                 Failed|Invalid|Timeout|Cancelled)
-                  echo "$name deployment failed: $status"
+                  echo "$name failed: $status"
                   exit 1
                   ;;
               esac
             done
-            echo "$name deployment timed out"
+            echo "$name timed out"
             exit 1
           }
 
-          while IFS='|' read -r old_pid new_name repo domain; do
-            [ -n "$old_pid" ] || continue
-            echo "=== $new_name ==="
+          echo '=== deploy current production projects first ==='
+          while IFS='|' read -r pid name; do
+            deploy_and_wait "$pid" "$name"
+          done <<'OLDPROJECTS'
+          makers-j78a9rcqplus|ffl-calendar
+          makers-xd264t8fdurz|fflmonitor
+          makers-mydii4lgessu|ram-upgrade
+          makers-nzei2cala27t|ca-miles
+          makers-ewx6ar2jer95|loveflyclub
+          OLDPROJECTS
 
-            found="$(project_by_name "$new_name")"
-            new_pid="$(jq -r '.Data.Response.Projects[0].ProjectId // empty' <<<"$found")"
+          bind_with_retry() {
+            local pid="$1" domain="$2" out msg
+            for n in $(seq 1 36); do
+              out="$(raw_api "$(jq -nc --arg pid "$pid" --arg d "$domain" '{Action:"CreatePagesZoneCustomDomain",ProjectId:$pid,Domain:$d}')")"
+              if jq -e '(.Code == 0) and ((.Data.Response.Error? // null) == null)' >/dev/null <<<"$out"; then
+                echo "$domain bind succeeded on attempt $n"
+                return 0
+              fi
+              msg="$(jq -r '.Data.Response.Error.Message // .Message // "unknown error"' <<<"$out")"
+              echo "$domain bind attempt $n: $msg"
+              if [[ "$msg" != *'Domain already exists in eo'* ]]; then
+                jq . <<<"$out" >&2
+                return 1
+              fi
+              sleep 10
+            done
+            return 1
+          }
 
-            if [ -z "$new_pid" ]; then
-              created="$(api "$(jq -nc \
-                --arg name "$new_name" \
-                --arg owner "$OWNER" \
-                --arg repo "$repo" \
-                '{Action:"CreatePagesProject",Name:$name,Channel:"Custom",Provider:"Github",Source:"ZP",RepoUrl:("https://github.com/"+$owner+"/"+$repo),RepoOwner:$owner,RepoName:$repo,RepoBranch:"main",RootDir:"./",Framework:"Other",NodejsVersion:"22.11.0",Area:"overseas"}')")"
-              new_pid="$(jq -r '.Data.Response.ProjectId' <<<"$created")"
-              sleep 2
-            fi
-
-            check="$(project_by_id "$new_pid")"
-            actual_owner="$(jq -r '.Data.Response.Projects[0].RepoOwner // ""' <<<"$check")"
-            actual_repo="$(jq -r '.Data.Response.Projects[0].RepoName // ""' <<<"$check")"
-            actual_provider="$(jq -r '.Data.Response.Projects[0].Provider // ""' <<<"$check")"
-
-            if [ "$actual_owner" != "$OWNER" ] || [ "$actual_repo" != "$repo" ] || [ "$actual_provider" != 'Github' ]; then
-              echo "$new_name has wrong GitHub metadata: owner=$actual_owner repo=$actual_repo provider=$actual_provider"
-              exit 1
-            fi
-
-            echo "$new_name: $new_pid -> $actual_owner/$actual_repo"
-            deploy_project "$new_pid" "$new_name"
-            printf '%s|%s|%s|%s\n' "$old_pid" "$new_pid" "$domain" "$new_name" >> "$STATE"
-          done <<'PROJECTS'
-          makers-j78a9rcqplus|ffl-calendar-new|ffl_calendar|calendar.lovefly.club
-          makers-xd264t8fdurz|fflmonitor-new|fflmonitor|666.lovefly.club
-          makers-mydii4lgessu|ram-upgrade-new|ram_upgrade|ram.lovefly.club
-          makers-nzei2cala27t|ca-miles-new|ca-miles|ca-miles.lovefly.club
-          makers-ewx6ar2jer95|loveflyclub-new|lovefly.club|lovefly.club
-          PROJECTS
-
-          echo '=== all new projects deployed; migrating domains ==='
-
+          echo '=== migrate custom domains ==='
           while IFS='|' read -r old_pid new_pid domain new_name; do
             new_info="$(project_by_id "$new_pid")"
             if jq -e --arg d "$domain" '.Data.Response.Projects[0].CustomDomains[]? | select(.Domain == $d)' >/dev/null <<<"$new_info"; then
-              echo "$domain already bound to $new_name"
+              echo "$domain already on $new_name"
               continue
             fi
 
             old_info="$(project_by_id "$old_pid")"
-            was_old=0
             if jq -e --arg d "$domain" '.Data.Response.Projects[0].CustomDomains[]? | select(.Domain == $d)' >/dev/null <<<"$old_info"; then
-              was_old=1
-              echo "unbind $domain from $old_pid"
+              echo "unbind $domain from old project"
               api "$(jq -nc --arg pid "$old_pid" --arg d "$domain" '{Action:"DeletePagesProjectCustomDomains",ProjectId:$pid,CustomDomains:[$d]}')" >/dev/null
-              sleep 2
+              echo "waiting for EdgeOne domain release..."
+              sleep 15
+            else
+              echo "$domain already absent from old Pages project; trying new binding"
             fi
 
-            echo "bind $domain to $new_pid"
-            if ! api "$(jq -nc --arg pid "$new_pid" --arg d "$domain" '{Action:"CreatePagesZoneCustomDomain",ProjectId:$pid,Domain:$d}')" >/dev/null; then
-              if [ "$was_old" -eq 1 ]; then
-                echo "binding failed; rolling $domain back"
-                api "$(jq -nc --arg pid "$old_pid" --arg d "$domain" '{Action:"CreatePagesZoneCustomDomain",ProjectId:$pid,Domain:$d}')" >/dev/null || true
-              fi
+            if ! bind_with_retry "$new_pid" "$domain"; then
+              echo "$domain could not be attached to $new_name"
               exit 1
             fi
 
-            online=0
-            for _ in $(seq 1 60); do
-              sleep 5
-              dr="$(api "$(jq -nc --arg pid "$new_pid" --arg d "$domain" '{Action:"DescribePagesZoneCustomDomains",ProjectId:$pid,Domain:$d}')")"
-              status="$(jq -r --arg d "$domain" '
-                if (.Data.Response.Domain? // "") == $d then (.Data.Response.Status // "")
-                else ([.Data.Response.PagesDomains[]? | select(.Domain == $d)][0].Status // "") end
-              ' <<<"$dr")"
-              echo "$domain status: ${status:-unknown}"
-              if [ "$status" = 'online' ]; then
-                online=1
+            for _ in $(seq 1 30); do
+              sleep 4
+              new_info="$(project_by_id "$new_pid")"
+              if jq -e --arg d "$domain" '.Data.Response.Projects[0].CustomDomains[]? | select(.Domain == $d)' >/dev/null <<<"$new_info"; then
+                code="$(curl -L -sS --max-time 20 -o /dev/null -w '%{http_code}' "https://${domain}/" || true)"
+                echo "$domain now on $new_name; HTTPS=$code"
                 break
               fi
             done
+          done <<'DOMAINS'
+          makers-j78a9rcqplus|makers-fxgtk9g6t5ru|calendar.lovefly.club|ffl-calendar-new
+          makers-xd264t8fdurz|makers-1gm615g3c1pl|666.lovefly.club|fflmonitor-new
+          makers-mydii4lgessu|makers-cy3owonuavay|ram.lovefly.club|ram-upgrade-new
+          makers-nzei2cala27t|makers-o8z6etxne9wi|ca-miles.lovefly.club|ca-miles-new
+          makers-ewx6ar2jer95|makers-obojyavn3ssu|lovefly.club|loveflyclub-new
+          DOMAINS
 
-            if [ "$online" -ne 1 ]; then
-              echo "$domain did not become online; rolling back"
-              api "$(jq -nc --arg pid "$new_pid" --arg d "$domain" '{Action:"DeletePagesProjectCustomDomains",ProjectId:$pid,CustomDomains:[$d]}')" >/dev/null || true
-              if [ "$was_old" -eq 1 ]; then
-                api "$(jq -nc --arg pid "$old_pid" --arg d "$domain" '{Action:"CreatePagesZoneCustomDomain",ProjectId:$pid,Domain:$d}')" >/dev/null || true
-              fi
-              exit 1
-            fi
-
-            code="$(curl -L -sS --max-time 20 -o /dev/null -w '%{http_code}' "https://${domain}/" || true)"
-            echo "$domain HTTPS: $code"
-          done < "$STATE"
-
-          echo '=== migration complete ==='
+          echo '=== deploy and migration complete ==='
