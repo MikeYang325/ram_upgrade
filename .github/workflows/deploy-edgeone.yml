@@ -1,4 +1,4 @@
-name: Enable EdgeOne HTTPS
+name: EdgeOne Maintenance
 
 on:
   push:
@@ -65,3 +65,63 @@ jobs:
           makers-o8z6etxne9wi|ca-miles.lovefly.club
           makers-obojyavn3ssu|lovefly.club
           DOMAINS
+
+  sync-new-projects:
+    if: github.event.head_commit.message == 'Sync new EdgeOne projects to latest main'
+    runs-on: ubuntu-latest
+    env:
+      EDGEONE_API_TOKEN: ${{ secrets.EDGEONE_API_TOKEN }}
+    steps:
+      - name: Deploy latest main to new projects
+        shell: bash
+        run: |
+          set -euo pipefail
+          API='https://pages-api.edgeone.ai/v1'
+          : "${EDGEONE_API_TOKEN:?EDGEONE_API_TOKEN is missing}"
+
+          api() {
+            local out
+            out="$(curl -sS "$API" \
+              -H 'Content-Type: application/json' \
+              -H "Authorization: Bearer ${EDGEONE_API_TOKEN}" \
+              --data-binary "$1")"
+            if ! jq -e '(.Code == 0) and ((.Data.Response.Error? // null) == null)' >/dev/null <<<"$out"; then
+              jq . <<<"$out" >&2 || true
+              return 1
+            fi
+            printf '%s' "$out"
+          }
+
+          deploy() {
+            local pid="$1" name="$2" resp did check status
+            resp="$(api "$(jq -nc --arg pid "$pid" '{Action:"CreatePagesDeployment",ProjectId:$pid,ViaMeta:"Github",Provider:"Github",Env:"Production",RepoBranch:"main"}')")"
+            did="$(jq -r '.Data.Response.DeploymentId // empty' <<<"$resp")"
+            [ -n "$did" ] || { echo "$name missing DeploymentId"; return 1; }
+            echo "$name deployment: $did"
+            for _ in $(seq 1 90); do
+              sleep 4
+              check="$(api "$(jq -nc --arg pid "$pid" --arg did "$did" '{Action:"DescribePagesDeployments",ProjectId:$pid,DeploymentIds:[$did],Limit:10,Offset:0}')")"
+              status="$(jq -r '.Data.Response.Deployments[0].Status // "Pending"' <<<"$check")"
+              echo "$name status: $status"
+              case "$status" in
+                Success)
+                  echo "$name commit: $(jq -r '.Data.Response.Deployments[0].RepoCommitHash // ""' <<<"$check")"
+                  return 0
+                  ;;
+                Failed|Invalid|Timeout|Cancelled)
+                  return 1
+                  ;;
+              esac
+            done
+            return 1
+          }
+
+          while IFS='|' read -r pid name; do
+            deploy "$pid" "$name"
+          done <<'PROJECTS'
+          makers-fxgtk9g6t5ru|ffl-calendar-new
+          makers-1gm615g3c1pl|fflmonitor-new
+          makers-cy3owonuavay|ram-upgrade-new
+          makers-o8z6etxne9wi|ca-miles-new
+          makers-obojyavn3ssu|loveflyclub-new
+          PROJECTS
