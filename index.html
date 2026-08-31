@@ -910,6 +910,13 @@ body{font-size:15px;line-height:1.45}.brand h1{font-size:19px}.brand p{font-size
 .track .overfill{background:var(--ram-red);opacity:.45}
 .progress-marker{position:absolute;top:-4px;bottom:-4px;left:var(--target-position,100%);width:2px;background:var(--text);transform:translateX(-1px);z-index:2}
 .track.is-over .progress-marker{background:var(--ram-red)}
+.progress-legend{display:flex;align-items:center;gap:14px;margin:0 0 10px;color:var(--muted);font-size:9px}
+.progress-legend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.progress-legend b{font-weight:500}
+.progress-swatch{display:inline-block;width:18px;height:5px;background:var(--ram-red)}
+.progress-swatch--over{opacity:.45}
+.progress-swatch--target{width:2px;height:12px;background:var(--text)}
+@media(max-width:720px){.progress-legend{gap:9px;font-size:8px}}
 </style>
 <link rel="stylesheet" href="/lovefly-tools.css?v=20260830-shell-4">
 </head>
@@ -1044,6 +1051,11 @@ body{font-size:15px;line-height:1.45}.brand h1{font-size:19px}.brand p{font-size
   </section>
 
   <section class="progress-box">
+    <div class="progress-legend" aria-label="进度条图例">
+      <span><i class="progress-swatch progress-swatch--earned"></i><b data-t="progressLegendEarned">已累计</b></span>
+      <span><i class="progress-swatch progress-swatch--over"></i><b data-t="progressLegendOver">超出目标</b></span>
+      <span><i class="progress-swatch progress-swatch--target"></i><b data-t="progressLegendTarget">目标线</b></span>
+    </div>
     <div class="progress-row">
       <div class="progress-name" data-t="totalProgress">总 Status Miles</div>
       <div class="track" id="totalTrack"><div class="fill" id="totalFill"></div><div class="overfill" id="totalOverfill"></div><span class="progress-marker" aria-hidden="true"></span></div>
@@ -1141,7 +1153,7 @@ zh:{
  outbound:"去程",return:"回程",targetSection:"目标会籍",boosterSection:"Status Booster",none:"无",
  currentSection:"当前进度",currentStatus:"当前 Status Miles",currentRam:"其中 RAM Status Miles",advancedControls:"高级计算",statusMapTitle:"会籍对应关系",statusMapSub:"Safar Flyer 与 oneworld 等级映射",sfStatus:"Safar Flyer 等级",owStatus:"oneworld 对应等级",
  result:"02 // 方案结果",baseOneWay:"单程基础",outStatus:"去程 Status Miles",retStatus:"回程 Status Miles",
- tripTotal:"本次行程",finalTotal:"年度累计",targetMetric:"目标",totalProgress:"总 Status Miles",
+ tripTotal:"本次行程",finalTotal:"年度累计",targetMetric:"目标",totalProgress:"总 Status Miles",progressLegendEarned:"已累计",progressLegendOver:"超出目标",progressLegendTarget:"目标线",
  ramProgress:"RAM Status Miles",ranking:"03 // 目的地排名",rankingHint:"按当前舱位与 Booster 实时计算",
  tableSearch:"搜索国家 / 城市 / 机场 / 三字码",sortDistance:"按飞行里程（由少到多）",sortRequired:"按达标所需里程（由少到多）",sortStatus:"按 Status Miles（由高到低）",sortBase:"按基础里程（由高到低）",
  passOnlyFixed:"✓ 仅显示达标路线",neededCol:"达标最低所需",surplusCol:"达标余量",destinationCol:"目的地",continentCountry:"大洲 / 国家",
@@ -1164,7 +1176,7 @@ en:{
  outbound:"Outbound",return:"Return",targetSection:"Target status",boosterSection:"Status Booster",none:"None",
  currentSection:"Current progress",currentStatus:"Current Status Miles",currentRam:"Current RAM Status Miles",advancedControls:"Advanced calculation",statusMapTitle:"Status equivalence",statusMapSub:"Safar Flyer to oneworld tier mapping",sfStatus:"Safar Flyer Status",owStatus:"oneworld Equivalent Status",
  result:"02 // RESULT",baseOneWay:"Base one-way",outStatus:"Outbound Status Miles",retStatus:"Return Status Miles",
- tripTotal:"Trip total",finalTotal:"Year total",targetMetric:"Target",totalProgress:"Total Status Miles",
+ tripTotal:"Trip total",finalTotal:"Year total",targetMetric:"Target",totalProgress:"Total Status Miles",progressLegendEarned:"Earned",progressLegendOver:"Above target",progressLegendTarget:"Target line",
  ramProgress:"RAM Status Miles",ranking:"03 // DESTINATION RANKING",rankingHint:"Calculated with current cabin and Booster",
  tableSearch:"Search country / city / airport / IATA",sortDistance:"Flight distance (low to high)",sortRequired:"Minimum miles to qualify",sortStatus:"Status Miles (high to low)",sortBase:"Base miles (high to low)",
  passOnlyFixed:"✓ Passing routes only",neededCol:"Minimum required",surplusCol:"Surplus",destinationCol:"Destination",continentCountry:"Continent / Country",
@@ -1318,7 +1330,8 @@ function calculate(){
   $("statusBadge").textContent=pass?tx("pass"):tx("fail");
   $("statusBadge").className="status-title "+(pass?"status-pass":"status-fail");
   const totalGap=Math.max(0,target.total-final), ramGap=Math.max(0,target.ram-finalRam);
-  $("statusDetail").textContent=pass ? `${target.name} ✓` : `${tx("needTotal")}: ${fmt(totalGap)} · ${tx("needRam")}: ${fmt(ramGap)}`;
+  const totalSurplus=Math.max(0,final-target.total), ramSurplus=Math.max(0,finalRam-target.ram);
+  $("statusDetail").textContent=pass ? `${target.name} ✓ · ${lang==="zh"?"总超出":"Total surplus"} ${fmt(totalSurplus)} · ${lang==="zh"?"RAM 超出":"RAM surplus"} ${fmt(ramSurplus)}` : `${tx("needTotal")}: ${fmt(totalGap)} · ${tx("needRam")}: ${fmt(ramGap)}`;
 
   const om=m(origin), dm=m(destination);
   const legData=[
